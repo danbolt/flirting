@@ -14,21 +14,27 @@ Gameplay.prototype.create = function () {
   testChar1.position.x = 6;
   testChar1.position.y = 2;
   testChar1.name = 'Bapi';
+  testChar1.hp = 5;
   testChar1.team = 0;
+  testChar1.romanceType = GameLogic.RomanceType.RUGGED;
   this.boardState.pieces.push(testChar1);
 
   var testChar2 = new GameLogic.BoardPiece();
   testChar2.position.x = 2;
   testChar2.position.y = 4;
   testChar2.name = 'Fish';
+  testChar2.hp = 2;
   testChar2.team = 1;
+  testChar2.romanceType = GameLogic.RomanceType.CLEVER;
   this.boardState.pieces.push(testChar2);
 
   var testChar3 = new GameLogic.BoardPiece();
   testChar3.position.x = 8;
   testChar3.position.y = 5;
   testChar3.name = 'Chet';
+  testChar3.hp = 6;
   testChar3.team = 1;
+  testChar3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
   this.boardState.pieces.push(testChar3);
 
   this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
@@ -56,10 +62,11 @@ Gameplay.prototype.shutdown = function () {
   this.boardState = null;
 };
 Gameplay.prototype.render = function () {
-  //this.game.debug.geom(new Phaser.Rectangle(10, 10, 16, 16));
-
   this.boardState.pieces.forEach(function (piece) {
-    this.game.debug.geom(new Phaser.Rectangle(piece.position.x * this.tileSize, piece.position.y * this.tileSize, this.tileSize, this.tileSize), this.boardState.teams[piece.team])
+    this.game.debug.geom(new Phaser.Rectangle(piece.position.x * this.tileSize, piece.position.y * this.tileSize, this.tileSize, this.tileSize), this.boardState.teams[piece.team]);
+    this.game.debug.text(piece.name, piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'white', '8px monospace');
+    this.game.debug.text('love: ' + piece.hp, piece.position.x * this.tileSize, piece.position.y * this.tileSize + 8, 'white', '8px monospace');
+    this.game.debug.text(piece.romanceType, piece.position.x * this.tileSize, piece.position.y * this.tileSize + 16, 'white', '8px monospace');
   }, this);
 };
 
