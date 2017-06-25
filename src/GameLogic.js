@@ -28,7 +28,7 @@ var GameLogic = (function () {
     Command.call(this);
 
     this.piece = -1;
-    this.desiredDestination = { x: -1, y: -1 };
+    this.steps = [];
   };
   MoveCommand.prototype = Object.create(Command.prototype);
 
@@ -42,7 +42,7 @@ var GameLogic = (function () {
     Result.call(this);
 
     this.piece = -1;
-    this.destination = { x: -1, y: -1 };
+    this.steps = [];
   };
   MoveResult.prototype = Object.create(Result.prototype);
 
@@ -55,13 +55,24 @@ var GameLogic = (function () {
     if (Number.isInteger(moveCommand.piece) && moveCommand.piece >= 0 && moveCommand.piece < boardState.pieces.length) {
       var pieceToMove = boardState.pieces[moveCommand.piece];
 
-      // ensure the piece is able to move the complete limit
-      var distanceTravelled = ~~(Math.abs(pieceToMove.position.x - moveCommand.desiredDestination.x) + Math.abs(pieceToMove.position.y - moveCommand.desiredDestination.y));
-      if (distanceTravelled <= baseMoveDistance) {
+      // check if the path follows a linear movement
+      var isPathConsistent = true;
+      var step = { x: pieceToMove.position.x, y: pieceToMove.position.y };
+      moveCommand.steps.forEach(function (nextStep) {
+        if (!((Math.abs(step.x - nextStep.x) === 1 && Math.abs(step.y - nextStep.y) !== 1) ||
+              (Math.abs(step.x - nextStep.x) !== 1 && Math.abs(step.y - nextStep.y) === 1))) {
+          isPathConsistent = false;
+        }
+
+        step.x = nextStep.x;
+        step.y = nextStep.y;
+      }, this);
+
+      // ensure the piece is able to move the provided path
+      if (moveCommand.steps.length <= baseMoveDistance && isPathConsistent) {
         var moveResult = new MoveResult();
         moveResult.piece = moveCommand.piece;
-        moveResult.destination.x = moveCommand.desiredDestination.x;
-        moveResult.destination.y = moveCommand.desiredDestination.y;
+        moveResult.steps = JSON.parse(JSON.stringify(moveCommand.steps));
         output.push(moveResult);
       }
     }
@@ -72,8 +83,8 @@ var GameLogic = (function () {
   var ApplyMoveResult = function (boardState, moveResult) {
     var newBoardState = JSON.parse(JSON.stringify(boardState));
 
-    newBoardState.pieces[moveResult.piece].position.x = moveResult.destination.x;
-    newBoardState.pieces[moveResult.piece].position.y = moveResult.destination.y;
+    newBoardState.pieces[moveResult.piece].position.x = moveResult.steps[moveResult.steps.length - 1].x;
+    newBoardState.pieces[moveResult.piece].position.y = moveResult.steps[moveResult.steps.length - 1].y;
 
     return newBoardState;
   };

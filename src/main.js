@@ -34,7 +34,17 @@ Gameplay.prototype.create = function () {
   this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
     var testMoveCommand = new GameLogic.MoveCommand();
     testMoveCommand.piece = 0;
-    testMoveCommand.desiredDestination = { x: this.boardState.pieces[0].position.x + 1, y: this.boardState.pieces[0].position.y };
+    for (var i = 1; i <= 3; i++) {
+      if (testMoveCommand.steps.length > 0) {
+        if ( i % 2 === 0) {
+          testMoveCommand.steps.push( { x: testMoveCommand.steps[testMoveCommand.steps.length - 1].x, y: testMoveCommand.steps[testMoveCommand.steps.length - 1].y + 1 } );
+        } else {
+          testMoveCommand.steps.push( { x: testMoveCommand.steps[testMoveCommand.steps.length - 1].x + 1, y: testMoveCommand.steps[testMoveCommand.steps.length - 1].y } );
+        }
+      } else {
+        testMoveCommand.steps.push( { x: this.boardState.pieces[0].position.x, y: this.boardState.pieces[0].position.y + 1 } );
+      }
+    }
     var moveResults = GameLogic.ApplyMoveCommand(this.boardState, testMoveCommand);
 
     moveResults.forEach(function (result) {
