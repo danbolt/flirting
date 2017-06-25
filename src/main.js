@@ -25,8 +25,8 @@ Gameplay.prototype.create = function () {
   this.boardState.pieces.push(testChar2);
 
   var testChar3 = new GameLogic.BoardPiece();
-  testChar3.position.x = 0;
-  testChar3.position.y = 0;
+  testChar3.position.x = 8;
+  testChar3.position.y = 5;
   testChar3.name = 'Chet';
   testChar3.team = 1;
   this.boardState.pieces.push(testChar3);

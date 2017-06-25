@@ -64,12 +64,27 @@ var GameLogic = (function () {
           isPathConsistent = false;
         }
 
+        // do not let paths blocked by an enemy piece go through
+        boardState.pieces.forEach(function (piece) {
+        if (piece.position.x === step.x && piece.position.y === step.y && pieceToMove.team !== piece.team) {
+          isPathConsistent = false;
+        }
+      }, this);
+
         step.x = nextStep.x;
         step.y = nextStep.y;
       }, this);
 
+      // check if there is anyone on the end step
+      var destinationIsNotBlocked = true;
+      boardState.pieces.forEach(function (piece) {
+        if (piece.position.x === moveCommand.steps[moveCommand.steps.length - 1].x && piece.position.y === moveCommand.steps[moveCommand.steps.length - 1].y) {
+          destinationIsNotBlocked = false;
+        }
+      }, this);
+
       // ensure the piece is able to move the provided path
-      if (moveCommand.steps.length <= baseMoveDistance && isPathConsistent) {
+      if (moveCommand.steps.length <= baseMoveDistance && isPathConsistent && destinationIsNotBlocked) {
         var moveResult = new MoveResult();
         moveResult.piece = moveCommand.piece;
         moveResult.steps = JSON.parse(JSON.stringify(moveCommand.steps));
