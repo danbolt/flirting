@@ -110,6 +110,15 @@ var GameLogic = (function () {
   };
   MoveCommand.prototype = Object.create(Command.prototype);
 
+  var AttackCommand = function () {
+    Command.call(this);
+
+    this.attacker = -1;
+    this.target = -1;
+    this.style = Style.NONE;
+  };
+  AttackCommand.prototype = Object.create(Command.prototype);
+
   // --- command results ---
 
   var Result = function () {
@@ -182,6 +191,45 @@ var GameLogic = (function () {
     return output;
   };
 
+  var ApplyAttackCommand = function (boardState, attackCommand) {
+    // check command indicies
+    if (!(Number.isInteger(attackCommand.attacker) && attackCommand.attacker >= 0 && attackCommand.attacker < boardState.pieces.length)) {
+      return [];
+    }
+    if (!(Number.isInteger(attackCommand.target) && attackCommand.target >= 0 && attackCommand.target < boardState.pieces.length)) {
+      return [];
+    }
+
+    var attackerPiece = boardState.pieces[attackCommand.attacker];
+    var targetPiece = boardState.pieces[attackCommand.target];
+
+    // no friendly fire flirts
+    if (attackerPiece.team === targetPiece.team) {
+      return [];
+    }
+
+    // check style index range
+    if (attackCommand.style < -1 || attackCommand.style >= 3) {
+      return [];
+    }
+
+    if (!((Math.abs(attackerPiece.position.x - targetPiece.position.x) === 1 && Math.abs(attackerPiece.position.y - targetPiece.position.y) !== 1) ||
+             (Math.abs(attackerPiece.position.x - targetPiece.position.x) !== 1 && Math.abs(attackerPiece.position.y - targetPiece.position.y) === 1))) {
+      return [];
+    }
+
+    var output = [];
+
+    var newAttackResult = new AttackResult();
+    newAttackResult.attacker = attackCommand.attacker;
+    newAttackResult.target = attackCommand.target;
+    newAttackResult.style = attackCommand.style;
+
+    output.push(newAttackResult);
+
+    return output;
+  }
+
   var ApplyMoveResult = function (boardState, moveResult) {
     var newBoardState = JSON.parse(JSON.stringify(boardState));
 
@@ -193,6 +241,12 @@ var GameLogic = (function () {
   var ApplyAttackResult = function (boardState, attackResult) {
     var newBoardState = JSON.parse(JSON.stringify(boardState));
 
+    var attackerPiece = newBoardState.pieces[attackResult.attacker];
+    var targetPiece = newBoardState.pieces[attackResult.target];
+
+    var damage = ComputeAttackDamage(attackResult.style, targetPiece.style, attackerPiece.romanceType, targetPiece.romanceType);
+    targetPiece.hp -= damage;
+
     return newBoardState;
   }
 
@@ -202,10 +256,14 @@ var GameLogic = (function () {
   gameLogic.BoardPiece = BoardPiece;
   gameLogic.Command = Command;
   gameLogic.MoveCommand = MoveCommand;
+  gameLogic.AttackCommand = AttackCommand;
   gameLogic.Result = Result;
   gameLogic.ApplyMoveCommand = ApplyMoveCommand;
+  gameLogic.ApplyAttackCommand = ApplyAttackCommand;
   gameLogic.MoveResult = MoveResult;
+  gameLogic.AttackResult = AttackResult;
   gameLogic.ApplyMoveResult = ApplyMoveResult;
+  gameLogic.ApplyAttackResult = ApplyAttackResult;
 
   return gameLogic;
 })();

@@ -11,12 +11,13 @@ Gameplay.prototype.create = function () {
   this.boardState.teams.push('blue');
 
   var testChar1 = new GameLogic.BoardPiece();
-  testChar1.position.x = 6;
-  testChar1.position.y = 2;
+  testChar1.position.x = 8;
+  testChar1.position.y = 4;
   testChar1.name = 'Bapi';
   testChar1.hp = 5;
   testChar1.team = 0;
-  testChar1.romanceType = GameLogic.RomanceType.RUGGED;
+  testChar1.romanceType = GameLogic.RomanceType.STYLISH;
+  testChar1.style = GameLogic.Style.NONE;
   this.boardState.pieces.push(testChar1);
 
   var testChar2 = new GameLogic.BoardPiece();
@@ -25,6 +26,7 @@ Gameplay.prototype.create = function () {
   testChar2.name = 'Fish';
   testChar2.hp = 2;
   testChar2.team = 1;
+  testChar2.style = GameLogic.Style.BOLD;
   testChar2.romanceType = GameLogic.RomanceType.CLEVER;
   this.boardState.pieces.push(testChar2);
 
@@ -34,10 +36,22 @@ Gameplay.prototype.create = function () {
   testChar3.name = 'Chet';
   testChar3.hp = 6;
   testChar3.team = 1;
+  testChar3.style = GameLogic.Style.SWEET;
   testChar3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
   this.boardState.pieces.push(testChar3);
 
   this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
+    var atk = new GameLogic.AttackCommand();
+    atk.attacker = 0;
+    atk.target = 2;
+    atk.style = GameLogic.Style.BOLD;
+    var attackResults = GameLogic.ApplyAttackCommand(this.boardState, atk)
+
+    attackResults.forEach(function (result) {
+      this.boardState = GameLogic.ApplyAttackResult(this.boardState, result);
+    }, this);
+
+    /*
     var testMoveCommand = new GameLogic.MoveCommand();
     testMoveCommand.piece = 0;
     for (var i = 1; i <= 3; i++) {
@@ -56,6 +70,7 @@ Gameplay.prototype.create = function () {
     moveResults.forEach(function (result) {
       this.boardState = GameLogic.ApplyMoveResult(this.boardState, result);
     }, this);
+    */
   }, this);
 };
 Gameplay.prototype.shutdown = function () {
@@ -66,7 +81,8 @@ Gameplay.prototype.render = function () {
     this.game.debug.geom(new Phaser.Rectangle(piece.position.x * this.tileSize, piece.position.y * this.tileSize, this.tileSize, this.tileSize), this.boardState.teams[piece.team]);
     this.game.debug.text(piece.name, piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'white', '8px monospace');
     this.game.debug.text('love: ' + piece.hp, piece.position.x * this.tileSize, piece.position.y * this.tileSize + 8, 'white', '8px monospace');
-    this.game.debug.text(piece.romanceType, piece.position.x * this.tileSize, piece.position.y * this.tileSize + 16, 'white', '8px monospace');
+    this.game.debug.text(GameLogic.RomanceType.getStringName(piece.romanceType), piece.position.x * this.tileSize, piece.position.y * this.tileSize + 16, 'white', '8px monospace');
+    this.game.debug.text(GameLogic.Style.getStringName(piece.style), piece.position.x * this.tileSize, piece.position.y * this.tileSize + 24, 'white', '8px monospace');
   }, this);
 };
 
