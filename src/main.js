@@ -11,8 +11,8 @@ Gameplay.prototype.create = function () {
   this.boardState.teams.push('blue');
 
   var testChar1 = new GameLogic.BoardPiece();
-  testChar1.position.x = 8;
-  testChar1.position.y = 4;
+  testChar1.position.x = 7;
+  testChar1.position.y = 2;
   testChar1.name = 'Bapi';
   testChar1.hp = 5;
   testChar1.team = 0;
@@ -41,17 +41,7 @@ Gameplay.prototype.create = function () {
   this.boardState.pieces.push(testChar3);
 
   this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
-    var atk = new GameLogic.AttackCommand();
-    atk.attacker = 0;
-    atk.target = 2;
-    atk.style = GameLogic.Style.BOLD;
-    var attackResults = GameLogic.ApplyAttackCommand(this.boardState, atk)
-
-    attackResults.forEach(function (result) {
-      this.boardState = GameLogic.ApplyAttackResult(this.boardState, result);
-    }, this);
-
-    /*
+    ///*
     var testMoveCommand = new GameLogic.MoveCommand();
     testMoveCommand.piece = 0;
     for (var i = 1; i <= 3; i++) {
@@ -68,16 +58,32 @@ Gameplay.prototype.create = function () {
     var moveResults = GameLogic.ApplyMoveCommand(this.boardState, testMoveCommand);
 
     moveResults.forEach(function (result) {
-      this.boardState = GameLogic.ApplyMoveResult(this.boardState, result);
+      this.boardState = GameLogic.ApplyResult(this.boardState, result);
     }, this);
-    */
+    //*/
+  }, this);
+
+    this.game.input.keyboard.addKey(Phaser.KeyCode.ENTER).onUp.add(function () {
+    ///*
+    var atk = new GameLogic.AttackCommand();
+    atk.attacker = 0;
+    atk.target = 2;
+    atk.style = GameLogic.Style.BOLD;
+    var attackResults = GameLogic.ApplyAttackCommand(this.boardState, atk)
+
+    attackResults.forEach(function (result) {
+      this.boardState = GameLogic.ApplyResult(this.boardState, result);
+    }, this);
+    //*/
   }, this);
 };
 Gameplay.prototype.shutdown = function () {
   this.boardState = null;
 };
 Gameplay.prototype.render = function () {
-  this.boardState.pieces.forEach(function (piece) {
+  this.boardState.pieces.forEach(function (piece, index) {
+    if (this.boardState.kos.indexOf(index) !== -1) { return; }
+
     this.game.debug.geom(new Phaser.Rectangle(piece.position.x * this.tileSize, piece.position.y * this.tileSize, this.tileSize, this.tileSize), this.boardState.teams[piece.team]);
     this.game.debug.text(piece.name, piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'white', '8px monospace');
     this.game.debug.text('love: ' + piece.hp, piece.position.x * this.tileSize, piece.position.y * this.tileSize + 8, 'white', '8px monospace');

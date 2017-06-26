@@ -85,6 +85,7 @@ var GameLogic = (function () {
   var BoardState = function () {
     this.pieces = [];
     this.teams = [];
+    this.kos = [];
   };
 
   var BoardPiece = function () {
@@ -142,6 +143,14 @@ var GameLogic = (function () {
   };
   AttackResult.prototype = Object.create(Result.prototype);
 
+  var KnockoutResult = function () {
+    Result.call(this);
+
+    this.piece = -1;
+    this.koer = -1;
+  };
+  KnockoutResult.prototype = Object.create(KnockoutResult.prototype);
+
   // --- logic functions ---
 
   var ApplyMoveCommand = function (boardState, moveCommand) {
@@ -150,6 +159,9 @@ var GameLogic = (function () {
     // ensure the piece is an index within range of the board state array
     if (Number.isInteger(moveCommand.piece) && moveCommand.piece >= 0 && moveCommand.piece < boardState.pieces.length) {
       var pieceToMove = boardState.pieces[moveCommand.piece];
+
+      // check if the character is alive
+      var isCharacterAlive = boardState.kos.indexOf(moveCommand.piece) === -1;
 
       // check if the path follows a linear movement
       var isPathConsistent = true;
@@ -161,8 +173,8 @@ var GameLogic = (function () {
         }
 
         // do not let paths blocked by an enemy piece go through
-        boardState.pieces.forEach(function (piece) {
-        if (piece.position.x === step.x && piece.position.y === step.y && pieceToMove.team !== piece.team) {
+        boardState.pieces.forEach(function (piece, index) {
+        if (piece.position.x === step.x && piece.position.y === step.y && pieceToMove.team !== piece.team && boardState.kos.indexOf(index) === -1) {
           isPathConsistent = false;
         }
       }, this);
@@ -180,7 +192,7 @@ var GameLogic = (function () {
       }, this);
 
       // ensure the piece is able to move the provided path
-      if (moveCommand.steps.length <= baseMoveDistance && isPathConsistent && destinationIsNotBlocked) {
+      if (moveCommand.steps.length <= baseMoveDistance && isPathConsistent && destinationIsNotBlocked && isCharacterAlive) {
         var moveResult = new MoveResult();
         moveResult.piece = moveCommand.piece;
         moveResult.steps = JSON.parse(JSON.stringify(moveCommand.steps));
@@ -198,6 +210,10 @@ var GameLogic = (function () {
     }
     if (!(Number.isInteger(attackCommand.target) && attackCommand.target >= 0 && attackCommand.target < boardState.pieces.length)) {
       return [];
+    }
+
+    if (boardState.kos.indexOf(attackCommand.attacker) !== -1 || boardState.kos.indexOf(attackCommand.target) !== -1) {
+      return []
     }
 
     var attackerPiece = boardState.pieces[attackCommand.attacker];
@@ -227,6 +243,14 @@ var GameLogic = (function () {
 
     output.push(newAttackResult);
 
+    var damage = ComputeAttackDamage(newAttackResult.style, targetPiece.style, attackerPiece.romanceType, targetPiece.romanceType);
+    if (targetPiece.hp - damage <= 0) {
+      var newKOResult = new KnockoutResult();
+      newKOResult.piece = attackCommand.target;
+      newKOResult.koer = attackCommand.attacker;
+      output.push(newKOResult);
+    }
+
     return output;
   }
 
@@ -248,7 +272,23 @@ var GameLogic = (function () {
     targetPiece.hp -= damage;
 
     return newBoardState;
-  }
+  };
+  var ApplyKnockoutResult = function (boardState, knockoutResult) {
+    var newBoardState = JSON.parse(JSON.stringify(boardState));
+
+    newBoardState.kos.push(knockoutResult.piece);
+
+    return newBoardState;
+  };
+  var ApplyResult = function (boardState, result) {
+    if (result instanceof MoveResult) {
+      return ApplyMoveResult(boardState, result);
+    } else if (result instanceof AttackResult) {
+      return ApplyAttackResult(boardState, result);
+    } else if (result instanceof KnockoutResult) {
+      return ApplyKnockoutResult(boardState, result);
+    }
+  };
 
   gameLogic.Style = Style;
   gameLogic.RomanceType = RomanceType;
@@ -262,8 +302,8 @@ var GameLogic = (function () {
   gameLogic.ApplyAttackCommand = ApplyAttackCommand;
   gameLogic.MoveResult = MoveResult;
   gameLogic.AttackResult = AttackResult;
-  gameLogic.ApplyMoveResult = ApplyMoveResult;
-  gameLogic.ApplyAttackResult = ApplyAttackResult;
+  gameLogic.KnockoutResult = KnockoutResult;
+  gameLogic.ApplyResult = ApplyResult;
 
   return gameLogic;
 })();
