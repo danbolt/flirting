@@ -86,7 +86,9 @@ var GameLogic = (function () {
     this.pieces = [];
     this.teams = [];
     this.kos = [];
+    this.turn = 0;
   };
+  BoardState.prototype.currentTurnTeam = function () { return this.turn % this.teams.length; };
 
   var BoardPiece = function () {
     this.position = { x: -1, y: -1};
@@ -120,6 +122,11 @@ var GameLogic = (function () {
   };
   AttackCommand.prototype = Object.create(Command.prototype);
 
+  var EndTurnCommand = function () {
+    Command.call(this);
+  };
+  EndTurnCommand.prototype = Object.create(Command.prototype);
+
   // --- command results ---
 
   var Result = function () {
@@ -151,13 +158,18 @@ var GameLogic = (function () {
   };
   KnockoutResult.prototype = Object.create(KnockoutResult.prototype);
 
+  var EndTurnResult = function () {
+    Result.call(this);
+  };
+  EndTurnResult.prototype = Object.create(EndTurnResult.prototype);
+
   // --- logic functions ---
 
   var ApplyMoveCommand = function (boardState, moveCommand) {
     var output = [];
 
     // ensure the piece is an index within range of the board state array
-    if (Number.isInteger(moveCommand.piece) && moveCommand.piece >= 0 && moveCommand.piece < boardState.pieces.length) {
+    if (Number.isInteger(moveCommand.piece) && moveCommand.piece >= 0 && moveCommand.piece < boardState.pieces.length && boardState.pieces[moveCommand.piece].team === boardState.currentTurnTeam()) {
       var pieceToMove = boardState.pieces[moveCommand.piece];
 
       // check if the character is alive
@@ -212,6 +224,10 @@ var GameLogic = (function () {
       return [];
     }
 
+    if (boardState.pieces[attackCommand.attacker].team !== boardState.currentTurnTeam()) {
+      return [];
+    }
+
     if (boardState.kos.indexOf(attackCommand.attacker) !== -1 || boardState.kos.indexOf(attackCommand.target) !== -1) {
       return []
     }
@@ -252,10 +268,15 @@ var GameLogic = (function () {
     }
 
     return output;
+  };
+
+  var ApplyEndTurnCommand = function (boardState, endTurnCommand) {
+    return [ new EndTurnCommand() ];
   }
 
   var ApplyMoveResult = function (boardState, moveResult) {
     var newBoardState = JSON.parse(JSON.stringify(boardState));
+    Object.setPrototypeOf(newBoardState, BoardState.prototype);
 
     newBoardState.pieces[moveResult.piece].position.x = moveResult.steps[moveResult.steps.length - 1].x;
     newBoardState.pieces[moveResult.piece].position.y = moveResult.steps[moveResult.steps.length - 1].y;
@@ -264,6 +285,7 @@ var GameLogic = (function () {
   };
   var ApplyAttackResult = function (boardState, attackResult) {
     var newBoardState = JSON.parse(JSON.stringify(boardState));
+    Object.setPrototypeOf(newBoardState, BoardState.prototype);
 
     var attackerPiece = newBoardState.pieces[attackResult.attacker];
     var targetPiece = newBoardState.pieces[attackResult.target];
@@ -275,8 +297,18 @@ var GameLogic = (function () {
   };
   var ApplyKnockoutResult = function (boardState, knockoutResult) {
     var newBoardState = JSON.parse(JSON.stringify(boardState));
+    Object.setPrototypeOf(newBoardState, BoardState.prototype);
 
     newBoardState.kos.push(knockoutResult.piece);
+
+    return newBoardState;
+  };
+
+  var ApplyEndTurnResult = function (boardState, endTurnResult) {
+    var newBoardState = JSON.parse(JSON.stringify(boardState));
+    Object.setPrototypeOf(newBoardState, BoardState.prototype);
+
+    newBoardState.turn++;
 
     return newBoardState;
   };
@@ -287,6 +319,8 @@ var GameLogic = (function () {
       return ApplyAttackResult(boardState, result);
     } else if (result instanceof KnockoutResult) {
       return ApplyKnockoutResult(boardState, result);
+    } else if (result instanceof EndTurnResult) {
+      return ApplyEndTurnResult(boardState, result);
     }
   };
 
@@ -297,6 +331,7 @@ var GameLogic = (function () {
   gameLogic.Command = Command;
   gameLogic.MoveCommand = MoveCommand;
   gameLogic.AttackCommand = AttackCommand;
+  gameLogic.EndTurnCommand = EndTurnCommand;
   gameLogic.Result = Result;
   gameLogic.ApplyMoveCommand = ApplyMoveCommand;
   gameLogic.ApplyAttackCommand = ApplyAttackCommand;
@@ -304,6 +339,7 @@ var GameLogic = (function () {
   gameLogic.AttackResult = AttackResult;
   gameLogic.KnockoutResult = KnockoutResult;
   gameLogic.ApplyResult = ApplyResult;
+  gameLogic.EndTurnResult = EndTurnResult;
 
   return gameLogic;
 })();
