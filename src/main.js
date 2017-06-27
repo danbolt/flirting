@@ -2,11 +2,24 @@
 var Gameplay = function () {
   this.boardState = null;
 
+  // --- ui state
   this.tileSize = 16;
+  this.cursorX = 2;
+  this.cursorY = 2;
+
+  // --- phaser ui data --
+  this.cursor = null;
+  this.tilemap = null;
+  this.characterSprites = null;
+  this.dataPane = null;
+};
+Gameplay.prototype.preload = function () {
+  //
 };
 Gameplay.prototype.create = function () {
-  this.boardState = new GameLogic.BoardState();
 
+  // initialize game state
+  this.boardState = new GameLogic.BoardState();
   this.boardState.teams.push('red');
   this.boardState.teams.push('blue');
 
@@ -40,8 +53,65 @@ Gameplay.prototype.create = function () {
   testChar3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
   this.boardState.pieces.push(testChar3);
 
+  // initialize map
+  this.tilemap = this.game.add.tilemap(null, this.tileSize, this.tileSize, 30, 30);
+  this.tilemap.addTilesetImage('map_image_data', 'map_sprites_tilesheet', 16, 16);
+  var mapLayer = this.tilemap.createBlankLayer('map', 30, 30, this.tileSize, this.tileSize);
+  this.tilemap.fill(2, 0, 0, 30, 30, mapLayer);
+  mapLayer.resizeWorld();
+
+  // initialize characters on map
+  this.characterSprites = this.game.add.group();
+  this.boardState.pieces.forEach(function (piece, index) {
+    var newCharacterOnMap = this.game.add.sprite(piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'map_sprites', 32);
+
+    if (piece.name === 'Bapi') {
+      newCharacterOnMap.animations.add('idle', [32, 33, 34], 3, true);
+    } else {
+      newCharacterOnMap.animations.add('idle', [35, 36, 37], 3, true);
+    }
+
+    newCharacterOnMap.animations.play('idle');
+  }, this);
+
+  // initialize ui
+  this.dataPane = this.game.add.sprite(0, 0, 'map_sprites', 3);
+  this.dataPane.width = 112;
+  this.dataPane.height = this.game.height;
+  this.dataPane.x = this.game.width - this.dataPane.width;
+  this.dataPane.fixedToCamera = true;
+
+  this.cursor = this.game.add.sprite(0, 0, 'map_sprites', 1);
+  this.refreshCursorPosition();
+
+  // initialize ui logic
+  this.game.input.keyboard.addKey(Phaser.KeyCode.DOWN).onUp.add(function () {
+    this.cursorY++;
+    this.refreshCursorPosition();
+  }, this);
+
+  this.game.input.keyboard.addKey(Phaser.KeyCode.UP).onUp.add(function () {
+    this.cursorY--;
+    this.refreshCursorPosition();
+  }, this);
+
+  this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT).onUp.add(function () {
+    this.cursorX--;
+    this.refreshCursorPosition();
+  }, this);
+
+  this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT).onUp.add(function () {
+    this.cursorX++;
+    this.refreshCursorPosition();
+  }, this);
+
+  this.game.camera.width = this.game.width - 112;
+  this.game.camera.setBoundsToWorld();
+  this.game.camera.follow(this.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
+
+  /*
+
   this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
-    ///*
     var testMoveCommand = new GameLogic.MoveCommand();
     testMoveCommand.piece = 0;
     for (var i = 1; i <= 3; i++) {
@@ -60,11 +130,9 @@ Gameplay.prototype.create = function () {
     moveResults.forEach(function (result) {
       this.boardState = GameLogic.ApplyResult(this.boardState, result);
     }, this);
-    //*/
   }, this);
 
     this.game.input.keyboard.addKey(Phaser.KeyCode.ENTER).onUp.add(function () {
-    ///*
     var atk = new GameLogic.AttackCommand();
     atk.attacker = 0;
     atk.target = 2;
@@ -74,13 +142,20 @@ Gameplay.prototype.create = function () {
     attackResults.forEach(function (result) {
       this.boardState = GameLogic.ApplyResult(this.boardState, result);
     }, this);
-    //*/
   }, this);
+
+  */
 };
 Gameplay.prototype.shutdown = function () {
   this.boardState = null;
+
+  this.cursor = null;
+  this.tilemap = null;
+  this.characterSprites = null;
+  this.dataPane = null;
 };
 Gameplay.prototype.render = function () {
+  /*
   this.boardState.pieces.forEach(function (piece, index) {
     if (this.boardState.kos.indexOf(index) !== -1) { return; }
 
@@ -90,12 +165,48 @@ Gameplay.prototype.render = function () {
     this.game.debug.text(GameLogic.RomanceType.getStringName(piece.romanceType), piece.position.x * this.tileSize, piece.position.y * this.tileSize + 16, 'white', '8px monospace');
     this.game.debug.text(GameLogic.Style.getStringName(piece.style), piece.position.x * this.tileSize, piece.position.y * this.tileSize + 24, 'white', '8px monospace');
   }, this);
+  */
+};
+
+Gameplay.prototype.refreshCursorPosition = function () {
+  this.cursor.position.set(this.cursorX * this.tileSize, this.cursorY * this.tileSize);
+};
+
+var Preload = function () {
+  //
+};
+Preload.prototype.init = function () {
+  this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+  this.game.scale.refresh();
+
+  this.game.scale.pageAlignHorizontally = true;
+  this.game.scale.pageAlignVertically = true;
+
+  // enable crisp rendering
+  this.game.stage.smoothed = false;
+  this.game.renderer.renderSession.roundPixels = true;  
+  Phaser.Canvas.setImageRenderingCrisp(this.game.canvas);
+  PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST; //for WebGL
+};
+Preload.prototype.preload = function () {
+  this.game.load.image('map_sprites_tilesheet', 'asset/img/map_sprites.png');
+
+  this.game.load.spritesheet('portraits', 'asset/img/portraits.png', 100, 160);
+  this.game.load.spritesheet('map_sprites', 'asset/img/map_sprites.png', 16, 16);
+};
+Preload.prototype.create = function() {
+  this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);
+  this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.UP);
+  this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
+
+  this.game.state.start('Gameplay');
 };
 
 var main = function () {
-  var game = new Phaser.Game(320, 240, Phaser.AUTO, undefined, undefined, false, false);
+  var game = new Phaser.Game(320, 180, Phaser.AUTO, undefined, undefined, false, false);
 
+  game.state.add('Preload', Preload, false);
   game.state.add('Gameplay', Gameplay, false);
-  game.state.start('Gameplay');
+  game.state.start('Preload');
 };
 
