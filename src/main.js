@@ -12,6 +12,8 @@ var Gameplay = function () {
   this.tilemap = null;
   this.characterSprites = null;
   this.dataPane = null;
+  this.portrait = null;
+  this.selectedCharacterText = null;
 };
 Gameplay.prototype.preload = function () {
   //
@@ -75,34 +77,48 @@ Gameplay.prototype.create = function () {
   }, this);
 
   // initialize ui
-  this.dataPane = this.game.add.sprite(0, 0, 'map_sprites', 3);
-  this.dataPane.width = 112;
-  this.dataPane.height = this.game.height;
-  this.dataPane.x = this.game.width - this.dataPane.width;
+  this.dataPane = this.game.add.group();
   this.dataPane.fixedToCamera = true;
+  this.dataPane.cameraOffset.x = this.game.width - 112;
+
+  var backing = this.game.add.sprite(0, 0, 'map_sprites', 3);
+  backing.width = 112;
+  backing.height = this.game.height;
+  this.dataPane.addChild(backing);
+  this.portrait = this.game.add.sprite(24, this.game.height - 160 + 24, 'portraits', 0);
+  this.dataPane.addChild(this.portrait);
+  this.selectedCharacterText = this.game.add.text(0, 0, '', { font: 'monospace', size: '16px' });
+  this.selectedCharacterText.smoothed = false;
+  this.dataPane.addChild(this.selectedCharacterText);
+  this.selectedCharacterText.position.set(0, 0);
 
   this.cursor = this.game.add.sprite(0, 0, 'map_sprites', 1);
   this.refreshCursorPosition();
+  this.refreshPaneData();
 
   // initialize ui logic
   this.game.input.keyboard.addKey(Phaser.KeyCode.DOWN).onUp.add(function () {
     this.cursorY++;
     this.refreshCursorPosition();
+    this.refreshPaneData();
   }, this);
 
   this.game.input.keyboard.addKey(Phaser.KeyCode.UP).onUp.add(function () {
     this.cursorY--;
     this.refreshCursorPosition();
+    this.refreshPaneData();
   }, this);
 
   this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT).onUp.add(function () {
     this.cursorX--;
     this.refreshCursorPosition();
+    this.refreshPaneData();
   }, this);
 
   this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT).onUp.add(function () {
     this.cursorX++;
     this.refreshCursorPosition();
+    this.refreshPaneData();
   }, this);
 
   this.game.camera.width = this.game.width - 112;
@@ -153,6 +169,8 @@ Gameplay.prototype.shutdown = function () {
   this.tilemap = null;
   this.characterSprites = null;
   this.dataPane = null;
+  this.portrait = null;
+  this.selectedCharacterText = null;
 };
 Gameplay.prototype.render = function () {
   /*
@@ -170,6 +188,23 @@ Gameplay.prototype.render = function () {
 
 Gameplay.prototype.refreshCursorPosition = function () {
   this.cursor.position.set(this.cursorX * this.tileSize, this.cursorY * this.tileSize);
+};
+Gameplay.prototype.refreshPaneData = function () {
+  var selectedPieces = this.boardState.pieces.filter(function (piece) { return piece.position.x === this.cursorX && piece.position.y === this.cursorY }, this);
+
+  if (selectedPieces.length > 0) {
+    var selectedPiece = selectedPieces[0];
+    if (selectedPiece.name === 'Bapi') {
+      this.portrait.frame = 1;
+    } else {
+      this.portrait.frame = 2;
+    }
+
+    this.selectedCharacterText.text = selectedPiece.name;
+  } else {
+    this.portrait.frame = 0;
+    this.selectedCharacterText.text = '';
+  }
 };
 
 var Preload = function () {
