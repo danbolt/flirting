@@ -75,6 +75,7 @@ Gameplay.prototype.create = function () {
     newCharacterOnMap.animations.play('idle');
     this.characterSprites.addChild(newCharacterOnMap);
   }, this);
+  this.refreshBoardView();
 
   // initialize ui
   this.dataPane = this.game.add.group();
@@ -194,7 +195,7 @@ Gameplay.prototype.shutdown = function () {
   this.selectedCharacterText = null;
 };
 Gameplay.prototype.refreshPaneData = function () {
-  var selectedPieces = this.boardState.pieces.filter(function (piece) { return piece.position.x === this.cursorUX.cursorX && piece.position.y === this.cursorUX.cursorY }, this);
+  var selectedPieces = this.boardState.pieces.filter(function (piece, index) { return piece.position.x === this.cursorUX.cursorX && piece.position.y === this.cursorUX.cursorY && this.boardState.kos.indexOf(index) === -1; }, this);
 
   if (selectedPieces.length > 0) {
     var selectedPiece = selectedPieces[0];
@@ -222,6 +223,9 @@ Gameplay.prototype.refreshBoardView = function () {
   this.characterSprites.forEachAlive(function (sprite) {
     sprite.x = this.boardState.pieces[sprite.data.index].position.x * this.tileSize;
     sprite.y = this.boardState.pieces[sprite.data.index].position.y * this.tileSize;
+    if (this.boardState.kos.indexOf(sprite.data.index) !== -1) {
+      sprite.renderable = false;
+    }
   }, this);
 };
 
