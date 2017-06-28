@@ -64,6 +64,7 @@ Gameplay.prototype.create = function () {
   this.characterSprites = this.game.add.group();
   this.boardState.pieces.forEach(function (piece, index) {
     var newCharacterOnMap = this.game.add.sprite(piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'map_sprites', 32);
+    newCharacterOnMap.data.index = index;
 
     if (piece.name === 'Bapi') {
       newCharacterOnMap.animations.add('idle', [32, 33, 34], 3, true);
@@ -92,8 +93,8 @@ Gameplay.prototype.create = function () {
 
   // initialize ui logic
 
-  // Daniel may want to formalize this
   var stitch = function(uxElementA, uxElementB) { uxElementA.confirm = uxElementB; uxElementB.back = uxElementA; };
+  //  ^^^^^^ maybe we should put this into different functionality? 
   
   this.cursorUX = new SelectCharacterUXElement(this.game, this);
   this.cursorUX.show();
@@ -107,6 +108,8 @@ Gameplay.prototype.create = function () {
   // handle UI logic
   this.currentUX = this.cursorUX;
   this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
+    if (this.currentUX.onConfirm() === false) { return; }
+
     if (this.currentUX.confirm) {
       this.currentUX.hide();
       this.currentUX.confirm.show();
@@ -114,6 +117,8 @@ Gameplay.prototype.create = function () {
     }
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.BACKSPACE).onUp.add(function () {
+    if (this.currentUX.onBack() === false) { return; }
+
     if (this.currentUX.back) {
       this.currentUX.hide();
       this.currentUX.back.show();

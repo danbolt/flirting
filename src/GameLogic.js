@@ -89,6 +89,15 @@ var GameLogic = (function () {
     this.turn = 0;
   };
   BoardState.prototype.currentTurnTeam = function () { return this.turn % this.teams.length; };
+  BoardState.prototype.getPieceForPosition = function (x, y) {
+    var piecesOn = this.pieces.filter(function (piece) { return piece.position.x === x && piece.position.y === y }, this);
+
+    if (piecesOn.length > 0) {
+      return piecesOn[0];
+    } else {
+      return null;
+    }
+  };
 
   var BoardPiece = function () {
     this.position = { x: -1, y: -1};
