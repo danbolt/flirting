@@ -204,7 +204,7 @@ Gameplay.prototype.refreshPaneData = function () {
       this.portrait.frame = 2;
     }
 
-    this.selectedCharacterText.text = selectedPiece.name;
+    this.selectedCharacterText.text = selectedPiece.name + '\n love: ' + selectedPiece.hp + '\n type: ' + GameLogic.RomanceType.getStringName(selectedPiece.romanceType);
   } else {
     this.portrait.frame = 0;
     this.selectedCharacterText.text = '';
