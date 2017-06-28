@@ -72,7 +72,7 @@ SelectCharacterUXElement.prototype.onLeft = function() {
 SelectCharacterUXElement.prototype.onConfirm = function() {
   var selectedPiece = this.gameplayState.boardState.getPieceForPosition(this.cursorX, this.cursorY);
 
-  if (selectedPiece !== null) {
+  if (selectedPiece !== null && selectedPiece.team === this.gameplayState.boardState.currentTurnTeam()) {
     return true;
   } else {
     return false;
@@ -95,6 +95,7 @@ var MoveCharacterUXElement = function (game, gameplayState) {
   this.cursor.renderable = false;
 
   this.steps = [];
+  this.selectedPiece = -1;
 
   this.moveIndicateText = this.game.add.text(0, 0, 'Select a position to move to, kid!', { font: 'monospace', size: '16px' });
   this.moveIndicateText.renderable = false;
@@ -104,15 +105,20 @@ MoveCharacterUXElement.prototype = Object.create(UXElement.prototype);
 
 MoveCharacterUXElement.prototype.show = function(onHide) {
   UXElement.prototype.show.call(this, onHide);
+  this.confirm = null;
 
   this.cursorX = this.gameplayState.cursorUX.cursorX;
   this.cursorY = this.gameplayState.cursorUX.cursorY;
   this.refreshCursorPosition();
 
+  // this should never be null if cursorUX's coordinates are correct
+  var selectedPieceObject = this.gameplayState.boardState.getPieceForPosition(this.cursorX, this.cursorY);
+  this.selectedPiece = this.gameplayState.boardState.pieces.indexOf(selectedPieceObject);
+
   this.cursor.renderable = true;
   this.moveIndicateText.renderable = true;
 
-  this.steps.length = 0;
+  this.steps = [];
   this.steps.push({ x: this.cursorX, y: this.cursorY });
 
   this.game.camera.follow(this.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
@@ -122,8 +128,31 @@ MoveCharacterUXElement.prototype.hide = function() {
 
   this.game.camera.follow(this.gameplayState.cursorUX.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
 
+  this.gameplayState.cursorUX.cursorX = this.cursorX;
+  this.gameplayState.cursorUX.cursorY = this.cursorY;
+  this.gameplayState.cursorUX.refreshCursorPosition();
+
   this.cursor.renderable = false;
   this.moveIndicateText.renderable = false;
+};
+MoveCharacterUXElement.prototype.onConfirm = function () {
+  if (this.steps.length < 2) {
+    return false;
+  }
+
+  this.steps.shift();
+  var command = new GameLogic.MoveCommand();
+  command.piece = this.selectedPiece;
+  command.steps = this.steps;
+
+  this.selectedPiece = -1;
+  this.steps = null;
+
+  this.confirm = this.gameplayState.cursorUX;
+
+  this.gameplayState.processCommand(command);
+
+  return true;
 };
 MoveCharacterUXElement.prototype.onDown = function() {
   if (this.steps.length > 4 && (this.steps[this.steps.length - 1].y - this.steps[this.steps.length - 2].y !== -1)) { return; }

@@ -283,6 +283,18 @@ var GameLogic = (function () {
     return [ new EndTurnCommand() ];
   }
 
+  var ApplyCommand = function (boardState, command) {
+    if (command instanceof MoveCommand) {
+      return ApplyMoveCommand(boardState, command);
+    } else if (command instanceof AttackCommand) {
+      return ApplyAttackCommand(boardState, command);
+    } else if (command instanceof EndTurnCommand) {
+      return ApplyEndTurnCommand(boardState, command);
+    } else {
+      return [];
+    }
+  };
+
   var ApplyMoveResult = function (boardState, moveResult) {
     var newBoardState = JSON.parse(JSON.stringify(boardState));
     Object.setPrototypeOf(newBoardState, BoardState.prototype);
@@ -344,6 +356,7 @@ var GameLogic = (function () {
   gameLogic.Result = Result;
   gameLogic.ApplyMoveCommand = ApplyMoveCommand;
   gameLogic.ApplyAttackCommand = ApplyAttackCommand;
+  gameLogic.ApplyCommand = ApplyCommand;
   gameLogic.MoveResult = MoveResult;
   gameLogic.AttackResult = AttackResult;
   gameLogic.KnockoutResult = KnockoutResult;

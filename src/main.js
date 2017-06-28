@@ -73,6 +73,7 @@ Gameplay.prototype.create = function () {
     }
 
     newCharacterOnMap.animations.play('idle');
+    this.characterSprites.addChild(newCharacterOnMap);
   }, this);
 
   // initialize ui
@@ -208,6 +209,20 @@ Gameplay.prototype.refreshPaneData = function () {
     this.portrait.frame = 0;
     this.selectedCharacterText.text = '';
   }
+};
+Gameplay.prototype.processCommand = function (command) {
+  var results = GameLogic.ApplyCommand(this.boardState, command);
+  results.forEach(function (result) {
+    this.boardState = GameLogic.ApplyResult(this.boardState, result);
+  }, this);
+
+  this.refreshBoardView();
+};
+Gameplay.prototype.refreshBoardView = function () {
+  this.characterSprites.forEachAlive(function (sprite) {
+    sprite.x = this.boardState.pieces[sprite.data.index].position.x * this.tileSize;
+    sprite.y = this.boardState.pieces[sprite.data.index].position.y * this.tileSize;
+  }, this);
 };
 
 var Preload = function () {
