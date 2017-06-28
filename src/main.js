@@ -4,8 +4,6 @@ var Gameplay = function () {
 
   // --- ui state
   this.tileSize = 16;
-  this.cursorX = 2;
-  this.cursorY = 2;
 
   // --- phaser ui data --
   this.cursor = null;
@@ -92,41 +90,58 @@ Gameplay.prototype.create = function () {
   this.dataPane.addChild(this.selectedCharacterText);
   this.selectedCharacterText.position.set(0, 0);
 
-  this.cursor = this.game.add.sprite(0, 0, 'map_sprites', 1);
-  this.refreshCursorPosition();
-  this.refreshPaneData();
-
   // initialize ui logic
-  this.game.input.keyboard.addKey(Phaser.KeyCode.DOWN).onUp.add(function () {
-    this.cursorY++;
-    this.refreshCursorPosition();
-    this.refreshPaneData();
-  }, this);
 
-  this.game.input.keyboard.addKey(Phaser.KeyCode.UP).onUp.add(function () {
-    this.cursorY--;
-    this.refreshCursorPosition();
-    this.refreshPaneData();
-  }, this);
-
-  this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT).onUp.add(function () {
-    this.cursorX--;
-    this.refreshCursorPosition();
-    this.refreshPaneData();
-  }, this);
-
-  this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT).onUp.add(function () {
-    this.cursorX++;
-    this.refreshCursorPosition();
-    this.refreshPaneData();
-  }, this);
+  // Daniel may want to formalize this
+  var stitch = function(uxElementA, uxElementB) { uxElementA.confirm = uxElementB; uxElementB.back = uxElementA; };
+  
+  this.cursorUX = new SelectCharacterUXElement(this.game, this);
+  this.cursorUX.show();
+  var moveUX = new MoveCharacterUXElement(this.game, this);
+  stitch(this.cursorUX, moveUX);
 
   this.game.camera.width = this.game.width - 112;
   this.game.camera.setBoundsToWorld();
-  this.game.camera.follow(this.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
+  this.game.camera.follow(this.cursorUX.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
+
+  // handle UI logic
+  this.currentUX = this.cursorUX;
+  this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
+    if (this.currentUX.confirm) {
+      this.currentUX.hide();
+      this.currentUX.confirm.show();
+      this.currentUX = this.currentUX.confirm;
+    }
+  }, this);
+  this.game.input.keyboard.addKey(Phaser.KeyCode.BACKSPACE).onUp.add(function () {
+    if (this.currentUX.back) {
+      this.currentUX.hide();
+      this.currentUX.back.show();
+      this.currentUX = this.currentUX.back;
+    }
+  }, this);
+  this.game.input.keyboard.addKey(Phaser.KeyCode.DOWN).onUp.add(function () {
+    this.currentUX.onDown();
+
+    this.refreshPaneData();
+  }, this);
+  this.game.input.keyboard.addKey(Phaser.KeyCode.UP).onUp.add(function () {
+    this.currentUX.onUp();
+
+    this.refreshPaneData();
+  }, this);
+  this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT).onUp.add(function () {
+    this.currentUX.onRight();
+
+    this.refreshPaneData();
+  }, this);
+  this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT).onUp.add(function () {
+    this.currentUX.onLeft();
+
+    this.refreshPaneData();
+  }, this);
 
   /*
-
   this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
     var testMoveCommand = new GameLogic.MoveCommand();
     testMoveCommand.piece = 0;
@@ -172,25 +187,8 @@ Gameplay.prototype.shutdown = function () {
   this.portrait = null;
   this.selectedCharacterText = null;
 };
-Gameplay.prototype.render = function () {
-  /*
-  this.boardState.pieces.forEach(function (piece, index) {
-    if (this.boardState.kos.indexOf(index) !== -1) { return; }
-
-    this.game.debug.geom(new Phaser.Rectangle(piece.position.x * this.tileSize, piece.position.y * this.tileSize, this.tileSize, this.tileSize), this.boardState.teams[piece.team]);
-    this.game.debug.text(piece.name, piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'white', '8px monospace');
-    this.game.debug.text('love: ' + piece.hp, piece.position.x * this.tileSize, piece.position.y * this.tileSize + 8, 'white', '8px monospace');
-    this.game.debug.text(GameLogic.RomanceType.getStringName(piece.romanceType), piece.position.x * this.tileSize, piece.position.y * this.tileSize + 16, 'white', '8px monospace');
-    this.game.debug.text(GameLogic.Style.getStringName(piece.style), piece.position.x * this.tileSize, piece.position.y * this.tileSize + 24, 'white', '8px monospace');
-  }, this);
-  */
-};
-
-Gameplay.prototype.refreshCursorPosition = function () {
-  this.cursor.position.set(this.cursorX * this.tileSize, this.cursorY * this.tileSize);
-};
 Gameplay.prototype.refreshPaneData = function () {
-  var selectedPieces = this.boardState.pieces.filter(function (piece) { return piece.position.x === this.cursorX && piece.position.y === this.cursorY }, this);
+  var selectedPieces = this.boardState.pieces.filter(function (piece) { return piece.position.x === this.cursorUX.cursorX && piece.position.y === this.cursorUX.cursorY }, this);
 
   if (selectedPieces.length > 0) {
     var selectedPiece = selectedPieces[0];
