@@ -44,7 +44,7 @@ Gameplay.prototype.create = function () {
   this.boardState.pieces.push(testChar2);
 
   var testChar3 = new GameLogic.BoardPiece();
-  testChar3.position.x = 8;
+  testChar3.position.x = 3;
   testChar3.position.y = 5;
   testChar3.name = 'Chet';
   testChar3.hp = 6;
@@ -100,8 +100,13 @@ Gameplay.prototype.create = function () {
   
   this.cursorUX = new SelectCharacterUXElement(this.game, this);
   this.cursorUX.show();
-  var moveUX = new MoveCharacterUXElement(this.game, this);
-  stitch(this.cursorUX, moveUX);
+  this.moveUX = new MoveCharacterUXElement(this.game, this);
+  stitch(this.cursorUX, this.moveUX);
+  this.flirtUX = new CheckFlirtUXElement(this.game, this);
+  stitch(this.moveUX, this.flirtUX);
+  this.styleUX = new SelectFlirtStyleUXElement(this.game, this);
+  stitch(this.flirtUX, this.styleUX);
+  stitch(this.styleUX, this.cursorUX);
 
   this.game.camera.width = this.game.width - 112;
   this.game.camera.setBoundsToWorld();

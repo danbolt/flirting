@@ -140,6 +140,15 @@ MoveCharacterUXElement.prototype.onConfirm = function () {
     return false;
   }
 
+  var flirtOptions = [];
+  var flirtCheckPositions = [{ x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: -1, y: 0 }];
+  flirtCheckPositions.forEach(function (checkPos) {
+    var flirtOptionCandidate = this.gameplayState.boardState.getPieceForPosition(this.cursorX + checkPos.x, this.cursorY + checkPos.y);
+    if (flirtOptionCandidate !== null && this.gameplayState.boardState.pieces.indexOf( flirtOptionCandidate ) !== this.selectedPiece && this.gameplayState.boardState.kos.indexOf(this.gameplayState.boardState.pieces.indexOf( flirtOptionCandidate )) === -1) {
+      flirtOptions.push( this.gameplayState.boardState.pieces.indexOf( flirtOptionCandidate ) );
+    }
+  }, this);
+
   this.steps.shift();
   var command = new GameLogic.MoveCommand();
   command.piece = this.selectedPiece;
@@ -148,7 +157,14 @@ MoveCharacterUXElement.prototype.onConfirm = function () {
   this.selectedPiece = -1;
   this.steps = null;
 
-  this.confirm = this.gameplayState.cursorUX;
+  if (flirtOptions.length > 0) {
+    this.gameplayState.flirtUX.flirtOptions = flirtOptions;
+    this.gameplayState.flirtUX.attackingPiece = command.piece;
+    this.gameplayState.styleUX.attackingPiece = command.piece;
+    this.confirm = this.gameplayState.flirtUX;
+  } else {
+    this.confirm = this.gameplayState.cursorUX;
+  }
 
   this.gameplayState.processCommand(command);
 
@@ -195,4 +211,113 @@ MoveCharacterUXElement.prototype.updateStepsStack = function () {
 };
 MoveCharacterUXElement.prototype.refreshCursorPosition = function () {
   this.cursor.position.set(this.cursorX * this.gameplayState.tileSize, this.cursorY * this.gameplayState.tileSize);
+};
+
+var CheckFlirtUXElement = function (game, gameplayState) {
+  UXElement.call(this, game);
+
+  this.gameplayState = gameplayState;
+
+  this.attackingPiece = -1;
+
+  this.flirtOptions = [];
+  this.flirtIndex = -1;
+
+  this.moveIndicateText = this.game.add.text(0, 0, 'THIS SHOULD NEVER BE SEEN', { font: 'monospace', size: '16px' });
+  this.moveIndicateText.renderable = false;
+  this.moveIndicateText.fixedToCamera = true;
+};
+CheckFlirtUXElement.prototype = Object.create(UXElement.prototype);
+CheckFlirtUXElement.prototype.show = function(onHide) {
+  UXElement.prototype.show.call(this, onHide);
+
+  this.flirtIndex = 0;
+  if (this.flirtOptions.length === 0) {
+    throw 'Daniel, we shouldn\'t be in this state if there are no options';
+  }
+
+  this.flirtIndex = 0;
+  this.updateSelectedView();
+
+  this.moveIndicateText.renderable = true;
+};
+CheckFlirtUXElement.prototype.hide = function() {
+  UXElement.prototype.hide.call(this);
+
+  this.moveIndicateText.renderable = false;
+};
+CheckFlirtUXElement.prototype.onConfirm = function () {
+  if (this.confirm instanceof SelectFlirtStyleUXElement) {
+    this.confirm.targetIndex = this.flirtOptions[this.flirtIndex];
+  }
+
+  return true;
+};
+CheckFlirtUXElement.prototype.onBack = function () {
+  this.back = this.gameplayState.cursorUX;
+
+  return true;
+};
+CheckFlirtUXElement.prototype.onDown = function() {
+  this.flirtIndex = (this.flirtIndex + 1) % this.flirtOptions.length;
+  this.updateSelectedView();
+};
+CheckFlirtUXElement.prototype.onUp = function() {
+  this.flirtIndex = (this.flirtIndex - 1 + this.flirtOptions.length) % this.flirtOptions.length;
+  this.updateSelectedView();
+};
+CheckFlirtUXElement.prototype.updateSelectedView = function() {
+  this.moveIndicateText.text = 'Have ' + this.gameplayState.boardState.pieces[this.attackingPiece].name + ' flirt with ' + this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].name + '?';
+};
+
+var SelectFlirtStyleUXElement = function (game, gameplayState) {
+  UXElement.call(this, game);
+
+  this.styleText = this.game.add.text(0, 0, 'Flirt?', { font: 'monospace', size: '16px' });
+  this.styleText.renderable = false;
+  this.styleText.fixedToCamera = true;
+
+  this.targetIndex = -1;
+  this.attackingPiece = -1;
+
+  this.gameplayState = gameplayState;
+};
+SelectFlirtStyleUXElement.prototype = Object.create(UXElement.prototype);
+SelectFlirtStyleUXElement.prototype.show = function(onHide) {
+  UXElement.prototype.show.call(this, onHide);
+
+  this.styleIndex = 0;
+  this.updateSelectedView()
+
+  if (this.attackingPiece === -1) {
+    throw 'Daniel, we should have an attackingPiece at this state';
+  }
+
+  this.styleText.renderable = true;
+};
+SelectFlirtStyleUXElement.prototype.hide = function() {
+  UXElement.prototype.hide.call(this);
+
+  this.styleText.renderable = false;
+};
+SelectFlirtStyleUXElement.prototype.onConfirm = function() {
+  var command = new GameLogic.AttackCommand();
+  command.attacker = this.attackingPiece;
+  command.target = this.targetIndex;
+  command.style = this.styleIndex;
+
+  this.gameplayState.processCommand(command);
+
+  return true;
+};
+SelectFlirtStyleUXElement.prototype.onDown = function() {
+  this.styleIndex = (this.styleIndex + 1) % 3;
+  this.updateSelectedView();
+};
+SelectFlirtStyleUXElement.prototype.onUp = function() {
+  this.styleIndex = (this.styleIndex + 2) % 3;
+  this.updateSelectedView();
+};
+SelectFlirtStyleUXElement.prototype.updateSelectedView = function() {
+  this.styleText.text = 'Have ' + this.gameplayState.boardState.pieces[this.attackingPiece].name + ' use ' + GameLogic.Style.getStringName(this.styleIndex) + ' style on ' + this.gameplayState.boardState.pieces[this.targetIndex].name + '?';
 };
