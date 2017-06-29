@@ -206,8 +206,8 @@ var GameLogic = (function () {
 
       // check if there is anyone on the end step
       var destinationIsNotBlocked = true;
-      boardState.pieces.forEach(function (piece) {
-        if (piece.position.x === moveCommand.steps[moveCommand.steps.length - 1].x && piece.position.y === moveCommand.steps[moveCommand.steps.length - 1].y) {
+      boardState.pieces.forEach(function (piece, index) {
+        if (piece.position.x === moveCommand.steps[moveCommand.steps.length - 1].x && piece.position.y === moveCommand.steps[moveCommand.steps.length - 1].y && boardState.kos.indexOf(index) === -1) {
           destinationIsNotBlocked = false;
         }
       }, this);
@@ -321,6 +321,8 @@ var GameLogic = (function () {
     Object.setPrototypeOf(newBoardState, BoardState.prototype);
 
     newBoardState.kos.push(knockoutResult.piece);
+    newBoardState.pieces[knockoutResult.piece].position.x = -1;
+    newBoardState.pieces[knockoutResult.piece].position.y = -1;
 
     return newBoardState;
   };
