@@ -18,10 +18,28 @@ Gameplay.prototype.preload = function () {
 };
 Gameplay.prototype.create = function () {
 
+  // initialize map
+  this.tilemap = this.game.add.tilemap('test_map_1');
+  this.tilemap.addTilesetImage('map_sprites', 'map_sprites_tilesheet');
+  var mapLayer = this.tilemap.createLayer(0);
+  mapLayer.resizeWorld();
+
   // initialize game state
   this.boardState = new GameLogic.BoardState();
   this.boardState.teams.push('red');
   this.boardState.teams.push('blue');
+
+  mapLayer.layer.data.forEach(function (row, y) {
+    this.boardState.terrain.push([]);
+
+    row.forEach(function (t, x) {
+      if (t.index === 3) {
+        this.boardState.terrain[y].push(0);
+      } else {
+        this.boardState.terrain[y].push(1);
+      }
+    }, this);
+  }, this);
 
   var testChar1 = new GameLogic.BoardPiece();
   testChar1.position.x = 7;
@@ -52,13 +70,6 @@ Gameplay.prototype.create = function () {
   testChar3.style = GameLogic.Style.SWEET;
   testChar3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
   this.boardState.pieces.push(testChar3);
-
-  // initialize map
-  this.tilemap = this.game.add.tilemap(null, this.tileSize, this.tileSize, 30, 30);
-  this.tilemap.addTilesetImage('map_image_data', 'map_sprites_tilesheet', 16, 16);
-  var mapLayer = this.tilemap.createBlankLayer('map', 30, 30, this.tileSize, this.tileSize);
-  this.tilemap.fill(2, 0, 0, 30, 30, mapLayer);
-  mapLayer.resizeWorld();
 
   // initialize characters on map
   this.characterSprites = this.game.add.group();
@@ -152,42 +163,7 @@ Gameplay.prototype.create = function () {
 
     this.refreshPaneData();
   }, this);
-
-  /*
-  this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
-    var testMoveCommand = new GameLogic.MoveCommand();
-    testMoveCommand.piece = 0;
-    for (var i = 1; i <= 3; i++) {
-      if (testMoveCommand.steps.length > 0) {
-        if ( i % 2 === 0) {
-          testMoveCommand.steps.push( { x: testMoveCommand.steps[testMoveCommand.steps.length - 1].x, y: testMoveCommand.steps[testMoveCommand.steps.length - 1].y + 1 } );
-        } else {
-          testMoveCommand.steps.push( { x: testMoveCommand.steps[testMoveCommand.steps.length - 1].x + 1, y: testMoveCommand.steps[testMoveCommand.steps.length - 1].y } );
-        }
-      } else {
-        testMoveCommand.steps.push( { x: this.boardState.pieces[0].position.x, y: this.boardState.pieces[0].position.y + 1 } );
-      }
-    }
-    var moveResults = GameLogic.ApplyMoveCommand(this.boardState, testMoveCommand);
-
-    moveResults.forEach(function (result) {
-      this.boardState = GameLogic.ApplyResult(this.boardState, result);
-    }, this);
-  }, this);
-
-    this.game.input.keyboard.addKey(Phaser.KeyCode.ENTER).onUp.add(function () {
-    var atk = new GameLogic.AttackCommand();
-    atk.attacker = 0;
-    atk.target = 2;
-    atk.style = GameLogic.Style.BOLD;
-    var attackResults = GameLogic.ApplyAttackCommand(this.boardState, atk)
-
-    attackResults.forEach(function (result) {
-      this.boardState = GameLogic.ApplyResult(this.boardState, result);
-    }, this);
-  }, this);
-
-  */
+  
 };
 Gameplay.prototype.shutdown = function () {
   this.boardState = null;
@@ -255,6 +231,8 @@ Preload.prototype.preload = function () {
 
   this.game.load.spritesheet('portraits', 'asset/img/portraits.png', 100, 160);
   this.game.load.spritesheet('map_sprites', 'asset/img/map_sprites.png', 16, 16);
+
+  this.game.load.tilemap('test_map_1', 'asset/map/test_map_1.json', undefined, Phaser.Tilemap.TILED_JSON);
 };
 Preload.prototype.create = function() {
   this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);

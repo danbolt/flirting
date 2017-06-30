@@ -87,6 +87,7 @@ var GameLogic = (function () {
     this.teams = [];
     this.kos = [];
     this.turn = 0;
+    this.terrain = []; // jagged 2d-array; first array is row, then value is column (eg: `this.terrain[y][x]`)
   };
   BoardState.prototype.currentTurnTeam = function () { return this.turn % this.teams.length; };
   BoardState.prototype.getPieceForPosition = function (x, y) {
@@ -193,7 +194,11 @@ var GameLogic = (function () {
           isPathConsistent = false;
         }
 
-        // do not let paths blocked by an enemy piece go through
+        if (boardState.terrain[nextStep.y][nextStep.x]) {
+          isPathConsistent = false;
+        }
+
+        // do not let paths blocked by an enemy piece or terrain go through
         boardState.pieces.forEach(function (piece, index) {
         if (piece.position.x === step.x && piece.position.y === step.y && pieceToMove.team !== piece.team && boardState.kos.indexOf(index) === -1) {
           isPathConsistent = false;

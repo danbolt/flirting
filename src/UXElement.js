@@ -171,6 +171,8 @@ MoveCharacterUXElement.prototype.onConfirm = function () {
   return true;
 };
 MoveCharacterUXElement.prototype.onDown = function() {
+  if (this.gameplayState.boardState.terrain[this.cursorY + 1][this.cursorX]) { return; }
+  if (this.gameplayState.boardState.getPieceForPosition(this.cursorX, this.cursorY + 1) && (this.gameplayState.boardState.pieces.indexOf(this.gameplayState.boardState.getPieceForPosition(this.cursorX, this.cursorY + 1)) !== this.selectedPiece)) { return }
   if (this.steps.length > 4 && (this.steps[this.steps.length - 1].y - this.steps[this.steps.length - 2].y !== -1)) { return; }
 
   this.cursorY++;
@@ -179,6 +181,8 @@ MoveCharacterUXElement.prototype.onDown = function() {
   this.updateStepsStack();
 };
 MoveCharacterUXElement.prototype.onUp = function() {
+  if (this.gameplayState.boardState.terrain[this.cursorY - 1][this.cursorX]) { return; }
+  if (this.gameplayState.boardState.getPieceForPosition(this.cursorX, this.cursorY - 1)  && (this.gameplayState.boardState.pieces.indexOf(this.gameplayState.boardState.getPieceForPosition(this.cursorX, this.cursorY - 1)) !== this.selectedPiece)) { return; }
   if (this.steps.length > 4 && (this.steps[this.steps.length - 1].y - this.steps[this.steps.length - 2].y !== 1)) { return; }
 
   this.cursorY--;
@@ -187,6 +191,8 @@ MoveCharacterUXElement.prototype.onUp = function() {
   this.updateStepsStack();
 };
 MoveCharacterUXElement.prototype.onRight = function() {
+  if (this.gameplayState.boardState.terrain[this.cursorY][this.cursorX + 1]) { return; }
+  if (this.gameplayState.boardState.getPieceForPosition(this.cursorX + 1, this.cursorY) && (this.gameplayState.boardState.pieces.indexOf(this.gameplayState.boardState.getPieceForPosition(this.cursorX + 1, this.cursorY)) !== this.selectedPiece)) { return; }
   if (this.steps.length > 4 && (this.steps[this.steps.length - 1].x - this.steps[this.steps.length - 2].x !== -1)) { return; }
 
   this.cursorX++;
@@ -195,6 +201,8 @@ MoveCharacterUXElement.prototype.onRight = function() {
   this.updateStepsStack();
 };
 MoveCharacterUXElement.prototype.onLeft = function() {
+  if (this.gameplayState.boardState.terrain[this.cursorY][this.cursorX - 1]) { return; }
+  if (this.gameplayState.boardState.getPieceForPosition(this.cursorX - 1, this.cursorY) && (this.gameplayState.boardState.pieces.indexOf(this.gameplayState.boardState.getPieceForPosition(this.cursorX - 1, this.cursorY)) !== this.selectedPiece)) { return; }
   if (this.steps.length > 4 && (this.steps[this.steps.length - 1].x - this.steps[this.steps.length - 2].x !== 1)) { return; }
 
   this.cursorX--;
