@@ -136,10 +136,6 @@ MoveCharacterUXElement.prototype.hide = function() {
   this.moveIndicateText.renderable = false;
 };
 MoveCharacterUXElement.prototype.onConfirm = function () {
-  if (this.steps.length < 2) {
-    return false;
-  }
-
   var flirtOptions = [];
   var flirtCheckPositions = [{ x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: -1, y: 0 }];
   flirtCheckPositions.forEach(function (checkPos) {

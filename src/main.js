@@ -163,7 +163,7 @@ Gameplay.prototype.create = function () {
 
     this.refreshPaneData();
   }, this);
-  
+
 };
 Gameplay.prototype.shutdown = function () {
   this.boardState = null;
@@ -194,11 +194,70 @@ Gameplay.prototype.refreshPaneData = function () {
 };
 Gameplay.prototype.processCommand = function (command) {
   var results = GameLogic.ApplyCommand(this.boardState, command);
-  results.forEach(function (result) {
-    this.boardState = GameLogic.ApplyResult(this.boardState, result);
-  }, this);
 
-  this.refreshBoardView();
+
+  if (results.length > 0) {
+
+    results.forEach(function (result) {
+      this.boardState = GameLogic.ApplyResult(this.boardState, result);
+
+      // generate tweens for the results
+      var resultTweens = [];
+      if (result instanceof GameLogic.MoveResult) {
+        var characterToMove = null;
+        this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.piece) { characterToMove = sprite } });
+
+        result.steps.forEach(function (step) {
+          var t = this.game.add.tween(characterToMove);
+          t.to( { x: step.x * this.tileSize, y: step.y * this.tileSize }, 100 );
+          resultTweens.push(t);
+        }, this);
+      } else if (result instanceof GameLogic.AttackResult) {
+        var characterToMove = null;
+        this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.attacker) { characterToMove = sprite; } });
+
+        var characterToGetHitOn = null;
+        this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.target) { characterToGetHitOn = sprite; } });
+
+        var t1 = this.game.add.tween(characterToMove);
+        t1.to( { x: ((characterToMove.x + characterToGetHitOn.x) / 2), y: ((characterToMove.y + characterToGetHitOn.y) / 2) }, 50 );
+        resultTweens.push(t1);
+        var t2 = this.game.add.tween(characterToMove);
+        t2.to( { x: characterToMove.x, y: characterToMove.y }, 50 );
+        resultTweens.push(t2);
+      } else if (result instanceof GameLogic.KnockoutResult) {
+        var characterToMove = null;
+        this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.piece) { characterToMove = sprite } });
+
+        var t = this.game.add.tween(characterToMove);
+        t.to( { alpha: 0 }, 100 );
+        resultTweens.push(t);
+      } else if (result instanceof GameLogic.EndTurnResult) {
+        //
+      }
+    }, this);
+
+    // tween or refresh if no tweens
+    if (resultTweens.length > 0) {
+      // stitch together tweens
+      if (resultTweens.length > 1) {
+        for (var i = 0; i < resultTweens.length - 1; i++) {
+          resultTweens[i].chain(resultTweens[i+1]);
+        }
+      }
+
+      // if we've tweened right, a call to refreshBoardView shouldn't change anything
+      resultTweens[resultTweens.length - 1].onComplete.add(function () {
+        this.refreshBoardView();
+      }, this);
+
+      resultTweens[0].start();
+      
+    } else {
+      this.refreshBoardView();
+    }
+  }
+
 };
 Gameplay.prototype.refreshBoardView = function () {
   this.characterSprites.forEachAlive(function (sprite) {
