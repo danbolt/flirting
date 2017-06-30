@@ -197,12 +197,13 @@ Gameplay.prototype.processCommand = function (command) {
 
 
   if (results.length > 0) {
+    // generate tweens for the results
+    var resultTweens = [];
 
     results.forEach(function (result) {
       this.boardState = GameLogic.ApplyResult(this.boardState, result);
 
-      // generate tweens for the results
-      var resultTweens = [];
+      
       if (result instanceof GameLogic.MoveResult) {
         var characterToMove = null;
         this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.piece) { characterToMove = sprite } });
