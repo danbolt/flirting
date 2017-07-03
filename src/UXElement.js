@@ -325,3 +325,78 @@ SelectFlirtStyleUXElement.prototype.onUp = function() {
 SelectFlirtStyleUXElement.prototype.updateSelectedView = function() {
   this.styleText.text = 'Have ' + this.gameplayState.boardState.pieces[this.attackingPiece].name + ' use ' + GameLogic.Style.getStringName(this.styleIndex) + ' style on ' + this.gameplayState.boardState.pieces[this.targetIndex].name + '?';
 };
+
+var DialogueUXElement = function(game, gameplayState) {
+  UXElement.call(this, game);
+
+  this.elements = this.game.add.group();
+  this.elements.fixedToCamera = true;
+  this.portraitA = this.game.add.sprite(           -100, this.game.height - 140, 'portraits', 1);
+  this.portraitB = this.game.add.sprite(this.game.width, this.game.height - 140, 'portraits', 2);
+
+  this.textArea = this.game.add.sprite(60, this.game.height + 20, 'map_sprites', 5);
+  this.textArea.width = this.game.width -120;
+  this.textArea.height = 48;
+  this.dialogueText = this.game.add.text(60, this.game.height + 20, 'i love flowers in the springtime i am on the ferry what would be some nice dialogue put something here daniel plz change font', { font: 'monospace', size: '16px', fill: 'white', wordWrap: true, wordWrapWidth: this.textArea.width });
+  this.dialogueText.lineSpacing = -8;
+
+  this.backing = this.game.add.sprite(0, 0, 'map_sprites', 5);
+  this.backing.width = this.game.width;
+  this.backing.height = this.game.height;
+  this.backing.alpha = 0;
+
+  this.elements.addChild(this.backing);
+  this.elements.addChild(this.portraitA);
+  this.elements.addChild(this.portraitB);
+  this.elements.addChild(this.textArea);
+  this.elements.addChild(this.dialogueText);
+  this.elements.forEach(function (c) {
+    c.visible = false;
+  });
+};
+DialogueUXElement.prototype = Object.create(UXElement.prototype);
+
+DialogueUXElement.prototype.show = function(onHide) {
+  UXElement.prototype.show.call(this, onHide);
+
+  this.elements.forEachAlive(function (c) { c.visible = true; });
+
+  var tweenTime = 600;
+  var fadeBackingIn = this.game.add.tween(this.backing);
+  fadeBackingIn.to( { alpha: 0.5 } , tweenTime, Phaser.Easing.Cubic.Out);
+  fadeBackingIn.start();
+  var movePortraitA = this.game.add.tween(this.portraitA);
+  movePortraitA.to({x: 0, y:this.game.height-160}, tweenTime, Phaser.Easing.Cubic.InOut );
+  movePortraitA.start();
+  var movePortraitB = this.game.add.tween(this.portraitB);
+  movePortraitB.to({x: this.game.width-100, y:this.game.height-160}, tweenTime, Phaser.Easing.Cubic.InOut );
+  movePortraitB.start();
+  var moveDialogueBacking = this.game.add.tween(this.textArea);
+  moveDialogueBacking.to({ y: 120 }, tweenTime, Phaser.Easing.Cubic.InOut );
+  moveDialogueBacking.start();
+  var moveDialogueText = this.game.add.tween(this.dialogueText);
+  moveDialogueText.to({ y: 120 }, tweenTime, Phaser.Easing.Cubic.InOut );
+  moveDialogueText.start();
+};
+DialogueUXElement.prototype.hide = function() {
+  UXElement.prototype.hide.call(this);
+
+  var tweenTime = 600;
+  var fadeBackingOut = this.game.add.tween(this.backing);
+  fadeBackingOut.to( { alpha: 0 } , tweenTime, Phaser.Easing.Cubic.Out);
+  fadeBackingOut.start();
+  var movePortraitA = this.game.add.tween(this.portraitA);
+  movePortraitA.to({x: -100, y:this.game.height-140}, tweenTime, Phaser.Easing.Cubic.InOut );
+  movePortraitA.start();
+  var movePortraitB = this.game.add.tween(this.portraitB);
+  movePortraitB.to({x: this.game.width, y:this.game.height-140}, tweenTime, Phaser.Easing.Cubic.InOut );
+  movePortraitB.start();
+  var moveDialogueBacking = this.game.add.tween(this.textArea);
+  moveDialogueBacking.to({ y: this.game.height + 20 }, tweenTime, Phaser.Easing.Cubic.InOut );
+  moveDialogueBacking.start();
+  var moveDialogueText = this.game.add.tween(this.dialogueText);
+  moveDialogueText.to({ y: this.game.height + 20 }, tweenTime, Phaser.Easing.Cubic.InOut );
+  moveDialogueText.start();
+
+  moveDialogueText.onComplete.add(function () { this.elements.forEachAlive(function (c) { c.visible = false; }); }, this);
+};

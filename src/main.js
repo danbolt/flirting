@@ -119,6 +119,12 @@ Gameplay.prototype.create = function () {
   stitch(this.flirtUX, this.styleUX);
   stitch(this.styleUX, this.cursorUX);
 
+  this.dialogueUX = new DialogueUXElement(this.game, this);
+  this.game.input.keyboard.addKey(Phaser.KeyCode.ENTER).onUp.add(function () {
+    this.dialogueUX.show();
+    this.game.time.events.add(1700, function () { this.dialogueUX.hide(); }, this);
+  }, this);
+
   this.game.camera.width = this.game.width - 112;
   this.game.camera.setBoundsToWorld();
   this.game.camera.follow(this.cursorUX.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
