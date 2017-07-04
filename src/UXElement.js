@@ -140,7 +140,7 @@ MoveCharacterUXElement.prototype.onConfirm = function () {
   var flirtCheckPositions = [{ x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: -1, y: 0 }];
   flirtCheckPositions.forEach(function (checkPos) {
     var flirtOptionCandidate = this.gameplayState.boardState.getPieceForPosition(this.cursorX + checkPos.x, this.cursorY + checkPos.y);
-    if (flirtOptionCandidate !== null && this.gameplayState.boardState.pieces.indexOf( flirtOptionCandidate ) !== this.selectedPiece && this.gameplayState.boardState.kos.indexOf(this.gameplayState.boardState.pieces.indexOf( flirtOptionCandidate )) === -1) {
+    if (flirtOptionCandidate !== null && this.gameplayState.boardState.pieces.indexOf( flirtOptionCandidate ) !== this.selectedPiece && flirtOptionCandidate.team !== this.gameplayState.boardState.pieces[this.selectedPiece].team && this.gameplayState.boardState.kos.indexOf(this.gameplayState.boardState.pieces.indexOf( flirtOptionCandidate )) === -1) {
       flirtOptions.push( this.gameplayState.boardState.pieces.indexOf( flirtOptionCandidate ) );
     }
   }, this);
