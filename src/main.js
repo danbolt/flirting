@@ -1,4 +1,14 @@
 
+// TODO: Move this to its own file
+var PortraitMap = {};
+PortraitMap['Bapi'] = 1;
+PortraitMap['Chet'] = 2;
+PortraitMap['Fish'] = 3;
+PortraitMap['Yang'] = 4;
+PortraitMap['Joss'] = 5;
+
+
+
 var Gameplay = function () {
   this.boardState = null;
 
@@ -51,6 +61,26 @@ Gameplay.prototype.create = function () {
   testChar1.style = GameLogic.Style.NONE;
   this.boardState.pieces.push(testChar1);
 
+  var herob = new GameLogic.BoardPiece();
+  herob.position.x = 9;
+  herob.position.y = 3;
+  herob.name = 'Yang';
+  herob.hp = 4;
+  herob.team = 0;
+  herob.romanceType = GameLogic.RomanceType.CLEVER;
+  herob.style = GameLogic.Style.NONE;
+  this.boardState.pieces.push(herob);
+
+  var heroc = new GameLogic.BoardPiece();
+  heroc.position.x = 8;
+  heroc.position.y = 4;
+  heroc.name = 'Chet';
+  heroc.hp = 5;
+  heroc.team = 0;
+  heroc.romanceType = GameLogic.RomanceType.RUGGED;
+  heroc.style = GameLogic.Style.NONE;
+  this.boardState.pieces.push(heroc);
+
   var testChar2 = new GameLogic.BoardPiece();
   testChar2.position.x = 2;
   testChar2.position.y = 4;
@@ -64,7 +94,7 @@ Gameplay.prototype.create = function () {
   var testChar3 = new GameLogic.BoardPiece();
   testChar3.position.x = 3;
   testChar3.position.y = 5;
-  testChar3.name = 'Chet';
+  testChar3.name = 'Joss';
   testChar3.hp = 6;
   testChar3.team = 1;
   testChar3.style = GameLogic.Style.SWEET;
@@ -77,7 +107,7 @@ Gameplay.prototype.create = function () {
     var newCharacterOnMap = this.game.add.sprite(piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'map_sprites', 32);
     newCharacterOnMap.data.index = index;
 
-    if (piece.name === 'Bapi') {
+    if (piece.team === 0) {
       newCharacterOnMap.animations.add('idle', [32, 33, 34], 3, true);
     } else {
       newCharacterOnMap.animations.add('idle', [35, 36, 37], 3, true);
@@ -97,7 +127,7 @@ Gameplay.prototype.create = function () {
   backing.width = 112;
   backing.height = this.game.height;
   this.dataPane.addChild(backing);
-  this.portrait = this.game.add.sprite(24, this.game.height - 160 + 24, 'portraits', 0);
+  this.portrait = this.game.add.sprite(12, this.game.height - 160 + 24, 'portraits', 0);
   this.dataPane.addChild(this.portrait);
   this.selectedCharacterText = this.game.add.text(0, 0, '', { font: 'monospace', size: '16px' });
   this.selectedCharacterText.smoothed = false;
@@ -192,11 +222,7 @@ Gameplay.prototype.refreshPaneData = function () {
 
   if (selectedPieces.length > 0) {
     var selectedPiece = selectedPieces[0];
-    if (selectedPiece.name === 'Bapi') {
-      this.portrait.frame = 1;
-    } else {
-      this.portrait.frame = 2;
-    }
+    this.portrait.frame = PortraitMap[selectedPiece.name];
 
     this.selectedCharacterText.text = selectedPiece.name + '\n love: ' + selectedPiece.hp + '\n type: ' + GameLogic.RomanceType.getStringName(selectedPiece.romanceType);
   } else {
@@ -238,6 +264,15 @@ Gameplay.prototype.processCommand = function (command) {
         var t2 = this.game.add.tween(characterToMove);
         t2.to( { x: characterToMove.x, y: characterToMove.y }, 50 );
         resultTweens.push(t2);
+
+        t1.doNotChain = true;
+        t1.onComplete.add(function () {
+          this.dialogueUX.show(function () {
+            t2.start();
+          });
+          
+          this.game.time.events.add(1700, function () { this.dialogueUX.hide(); }, this);
+        }, this);
       } else if (result instanceof GameLogic.KnockoutResult) {
         var characterToMove = null;
         this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.piece) { characterToMove = sprite } });
@@ -255,6 +290,7 @@ Gameplay.prototype.processCommand = function (command) {
       // stitch together tweens
       if (resultTweens.length > 1) {
         for (var i = 0; i < resultTweens.length - 1; i++) {
+          if (resultTweens[i].doNotChain === true) { continue; }
           resultTweens[i].chain(resultTweens[i+1]);
         }
       }
