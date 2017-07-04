@@ -132,6 +132,7 @@ Gameplay.prototype.create = function () {
   // handle UI logic
   this.currentUX = this.cursorUX;
   this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
+    if (this.dialogueUX.showing === true) { return; }
     if (this.currentUX.onConfirm() === false) { return; }
 
     if (this.currentUX.confirm) {
@@ -141,6 +142,7 @@ Gameplay.prototype.create = function () {
     }
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.BACKSPACE).onUp.add(function () {
+    if (this.dialogueUX.showing === true) { return; }
     if (this.currentUX.onBack() === false) { return; }
 
     if (this.currentUX.back) {
@@ -150,21 +152,25 @@ Gameplay.prototype.create = function () {
     }
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.DOWN).onUp.add(function () {
+    if (this.dialogueUX.showing === true) { return; }
     this.currentUX.onDown();
 
     this.refreshPaneData();
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.UP).onUp.add(function () {
+    if (this.dialogueUX.showing === true) { return; }
     this.currentUX.onUp();
 
     this.refreshPaneData();
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT).onUp.add(function () {
+    if (this.dialogueUX.showing === true) { return; }
     this.currentUX.onRight();
 
     this.refreshPaneData();
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT).onUp.add(function () {
+    if (this.dialogueUX.showing === true) { return; }
     this.currentUX.onLeft();
 
     this.refreshPaneData();
