@@ -195,7 +195,6 @@ Gameplay.prototype.create = function () {
   this.dialogueUX = new DialogueUXElement(this.game, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.ENTER).onUp.add(function () {
     this.dialogueUX.show();
-    this.game.time.events.add(1700, function () { this.dialogueUX.hide(); }, this);
   }, this);
 
   this.game.camera.width = this.game.width - 112;
@@ -313,8 +312,6 @@ Gameplay.prototype.processCommand = function (command) {
           this.dialogueUX.show(function () {
             t2.start();
           });
-          
-          this.game.time.events.add(1700, function () { this.dialogueUX.hide(); }, this);
         }, this);
       } else if (result instanceof GameLogic.KnockoutResult) {
         var characterToMove = null;

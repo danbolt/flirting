@@ -361,9 +361,12 @@ var DialogueUXElement = function(game, gameplayState) {
 DialogueUXElement.prototype = Object.create(UXElement.prototype);
 
 DialogueUXElement.prototype.show = function(onHide) {
+  if (this.showing) { return; }
+
   UXElement.prototype.show.call(this, onHide);
 
   this.elements.forEachAlive(function (c) { c.visible = true; });
+  this.dialogueText.children.forEach(function (c) { c.visible = false; });
 
   var tweenTime = 600;
   var fadeBackingIn = this.game.add.tween(this.backing);
@@ -381,6 +384,25 @@ DialogueUXElement.prototype.show = function(onHide) {
   var moveDialogueText = this.game.add.tween(this.dialogueText);
   moveDialogueText.to({ y: 120 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveDialogueText.start();
+
+  moveDialogueText.onComplete.add(function () {
+    this.game.time.events.add(300, function () {
+
+      var childIndex = 0;
+      var tickLettersLoop = this.game.time.events.loop(60, function () {
+        this.dialogueText.children[childIndex].visible = true;
+        childIndex++;
+        tickLettersLoop.delay = this.game.input.keyboard.isDown(Phaser.KeyCode.SHIFT) ? 30 : 60;
+
+        if (childIndex === this.dialogueText.children.length) {
+          this.game.time.events.remove(tickLettersLoop);
+
+          this.game.time.events.add(300, this.hide, this);
+        }
+      }, this);
+
+    }, this);
+  }, this);
 };
 DialogueUXElement.prototype.hide = function() {
   UXElement.prototype.hide.call(this);
