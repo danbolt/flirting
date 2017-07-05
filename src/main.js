@@ -6,7 +6,10 @@ PortraitMap['Chet'] = 2;
 PortraitMap['Fish'] = 3;
 PortraitMap['Yang'] = 4;
 PortraitMap['Joss'] = 5;
-
+PortraitMap['Sanders'] = 6;
+PortraitMap['Neil'] = 7;
+PortraitMap['Jace'] = 8;
+PortraitMap['Lester'] = 9;
 
 
 var Gameplay = function () {
@@ -80,6 +83,46 @@ Gameplay.prototype.create = function () {
   heroc.romanceType = GameLogic.RomanceType.RUGGED;
   heroc.style = GameLogic.Style.NONE;
   this.boardState.pieces.push(heroc);
+
+  var herod = new GameLogic.BoardPiece();
+  herod.position.x = 5;
+  herod.position.y = 5;
+  herod.name = 'Sanders';
+  herod.hp = 5;
+  herod.team = 0;
+  herod.romanceType = GameLogic.RomanceType.RUGGED;
+  herod.style = GameLogic.Style.NONE;
+  this.boardState.pieces.push(herod);
+
+  var heroe = new GameLogic.BoardPiece();
+  heroe.position.x = 5;
+  heroe.position.y = 5;
+  heroe.name = 'Neil';
+  heroe.hp = 5;
+  heroe.team = 0;
+  heroe.romanceType = GameLogic.RomanceType.RUGGED;
+  heroe.style = GameLogic.Style.NONE;
+  this.boardState.pieces.push(heroe);
+
+  var herof = new GameLogic.BoardPiece();
+  herof.position.x = 5;
+  herof.position.y = 7;
+  herof.name = 'Jace';
+  herof.hp = 5;
+  herof.team = 0;
+  herof.romanceType = GameLogic.RomanceType.RUGGED;
+  herof.style = GameLogic.Style.NONE;
+  this.boardState.pieces.push(herof);
+
+  var herog = new GameLogic.BoardPiece();
+  herog.position.x = 5;
+  herog.position.y = 9;
+  herog.name = 'Lester';
+  herog.hp = 5;
+  herog.team = 0;
+  herog.romanceType = GameLogic.RomanceType.RUGGED;
+  herog.style = GameLogic.Style.NONE;
+  this.boardState.pieces.push(herog);
 
   var testChar2 = new GameLogic.BoardPiece();
   testChar2.position.x = 2;
