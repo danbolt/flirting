@@ -311,6 +311,9 @@ SelectFlirtStyleUXElement.prototype.onConfirm = function() {
   command.target = this.targetIndex;
   command.style = this.styleIndex;
 
+  this.gameplayState.dialogueUX.portraitA.frame = PortraitMap[this.gameplayState.boardState.pieces[this.targetIndex].name];
+  this.gameplayState.dialogueUX.portraitB.frame = PortraitMap[this.gameplayState.boardState.pieces[this.attackingPiece].name];
+
   this.gameplayState.processCommand(command);
 
   return true;

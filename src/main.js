@@ -95,8 +95,8 @@ Gameplay.prototype.create = function () {
   this.boardState.pieces.push(herod);
 
   var heroe = new GameLogic.BoardPiece();
-  heroe.position.x = 5;
-  heroe.position.y = 5;
+  heroe.position.x = 6;
+  heroe.position.y = 6;
   heroe.name = 'Neil';
   heroe.hp = 5;
   heroe.team = 0;
