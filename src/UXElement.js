@@ -97,8 +97,8 @@ var MoveCharacterUXElement = function (game, gameplayState) {
   this.steps = [];
   this.selectedPiece = -1;
 
-  this.moveIndicateText = this.game.add.text(0, 0, 'Select a position to move to, kid!', { font: 'monospace', size: '16px' });
-  this.moveIndicateText.renderable = false;
+  this.moveIndicateText = this.game.add.bitmapText(2, 2, 'newsgeek', 'Select a position to\nmove to.', 12);
+  this.moveIndicateText.visible = false;
   this.moveIndicateText.fixedToCamera = true;
 };
 MoveCharacterUXElement.prototype = Object.create(UXElement.prototype);
@@ -116,7 +116,7 @@ MoveCharacterUXElement.prototype.show = function(onHide) {
   this.selectedPiece = this.gameplayState.boardState.pieces.indexOf(selectedPieceObject);
 
   this.cursor.renderable = true;
-  this.moveIndicateText.renderable = true;
+  this.moveIndicateText.visible = true;
 
   this.steps = [];
   this.steps.push({ x: this.cursorX, y: this.cursorY });
@@ -133,7 +133,7 @@ MoveCharacterUXElement.prototype.hide = function() {
   this.gameplayState.cursorUX.refreshCursorPosition();
 
   this.cursor.renderable = false;
-  this.moveIndicateText.renderable = false;
+  this.moveIndicateText.visible = false;
 };
 MoveCharacterUXElement.prototype.onConfirm = function () {
   var flirtOptions = [];
@@ -227,8 +227,9 @@ var CheckFlirtUXElement = function (game, gameplayState) {
   this.flirtOptions = [];
   this.flirtIndex = -1;
 
-  this.moveIndicateText = this.game.add.text(0, 0, 'THIS SHOULD NEVER BE SEEN', { font: 'monospace', size: '16px' });
-  this.moveIndicateText.renderable = false;
+
+  this.moveIndicateText = this.game.add.bitmapText(2, 2, 'newsgeek', '', 12);
+  this.moveIndicateText.visible = false;
   this.moveIndicateText.fixedToCamera = true;
 };
 CheckFlirtUXElement.prototype = Object.create(UXElement.prototype);
@@ -243,12 +244,12 @@ CheckFlirtUXElement.prototype.show = function(onHide) {
   this.flirtIndex = 0;
   this.updateSelectedView();
 
-  this.moveIndicateText.renderable = true;
+  this.moveIndicateText.visible = true;
 };
 CheckFlirtUXElement.prototype.hide = function() {
   UXElement.prototype.hide.call(this);
 
-  this.moveIndicateText.renderable = false;
+  this.moveIndicateText.visible = false;
 };
 CheckFlirtUXElement.prototype.onConfirm = function () {
   if (this.confirm instanceof SelectFlirtStyleUXElement) {
@@ -277,8 +278,8 @@ CheckFlirtUXElement.prototype.updateSelectedView = function() {
 var SelectFlirtStyleUXElement = function (game, gameplayState) {
   UXElement.call(this, game);
 
-  this.styleText = this.game.add.text(0, 0, 'Flirt?', { font: 'monospace', size: '16px' });
-  this.styleText.renderable = false;
+  this.styleText = this.game.add.bitmapText(2, 2, 'newsgeek', '', 12);
+  this.styleText.visible = false;
   this.styleText.fixedToCamera = true;
 
   this.targetIndex = -1;
@@ -297,12 +298,12 @@ SelectFlirtStyleUXElement.prototype.show = function(onHide) {
     throw 'Daniel, we should have an attackingPiece at this state';
   }
 
-  this.styleText.renderable = true;
+  this.styleText.visible = true;
 };
 SelectFlirtStyleUXElement.prototype.hide = function() {
   UXElement.prototype.hide.call(this);
 
-  this.styleText.renderable = false;
+  this.styleText.visible = false;
 };
 SelectFlirtStyleUXElement.prototype.onConfirm = function() {
   var command = new GameLogic.AttackCommand();
@@ -334,11 +335,11 @@ var DialogueUXElement = function(game, gameplayState) {
   this.portraitA = this.game.add.sprite(           -100, this.game.height - 140, 'portraits', 1);
   this.portraitB = this.game.add.sprite(this.game.width, this.game.height - 140, 'portraits', 2);
 
-  this.textArea = this.game.add.sprite(60, this.game.height + 20, 'map_sprites', 5);
-  this.textArea.width = this.game.width -120;
-  this.textArea.height = 48;
-  this.dialogueText = this.game.add.text(60, this.game.height + 20, 'i love flowers in the springtime i am on the ferry what would be some nice dialogue put something here daniel plz change font', { font: 'monospace', size: '16px', fill: 'white', wordWrap: true, wordWrapWidth: this.textArea.width });
-  this.dialogueText.lineSpacing = -8;
+  this.textArea = this.game.add.sprite(54, this.game.height + 18, 'map_sprites', 5);
+  this.textArea.width = this.game.width -120 + 16;
+  this.textArea.height = 48 + 8;
+  this.dialogueText = this.game.add.bitmapText(60, this.game.height, 'newsgeek', 'I love flowers in the springtime. What happens if we add more dialogue? We could keep going, but we only get 4 lines max.', 12);
+  this.dialogueText.maxWidth = this.textArea.width - 8;
 
   this.backing = this.game.add.sprite(0, 0, 'map_sprites', 5);
   this.backing.width = this.game.width;
@@ -369,10 +370,10 @@ DialogueUXElement.prototype.show = function(onHide) {
   movePortraitA.to({x: 0, y:this.game.height-160}, tweenTime, Phaser.Easing.Cubic.InOut );
   movePortraitA.start();
   var movePortraitB = this.game.add.tween(this.portraitB);
-  movePortraitB.to({x: this.game.width-100, y:this.game.height-160}, tweenTime, Phaser.Easing.Cubic.InOut );
+  movePortraitB.to({x: this.game.width-102, y:this.game.height-162}, tweenTime, Phaser.Easing.Cubic.InOut );
   movePortraitB.start();
   var moveDialogueBacking = this.game.add.tween(this.textArea);
-  moveDialogueBacking.to({ y: 120 }, tweenTime, Phaser.Easing.Cubic.InOut );
+  moveDialogueBacking.to({ y: 116 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveDialogueBacking.start();
   var moveDialogueText = this.game.add.tween(this.dialogueText);
   moveDialogueText.to({ y: 120 }, tweenTime, Phaser.Easing.Cubic.InOut );
@@ -392,7 +393,7 @@ DialogueUXElement.prototype.hide = function() {
   movePortraitB.to({x: this.game.width, y:this.game.height-140}, tweenTime, Phaser.Easing.Cubic.InOut );
   movePortraitB.start();
   var moveDialogueBacking = this.game.add.tween(this.textArea);
-  moveDialogueBacking.to({ y: this.game.height + 20 }, tweenTime, Phaser.Easing.Cubic.InOut );
+  moveDialogueBacking.to({ y: this.game.height + 18 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveDialogueBacking.start();
   var moveDialogueText = this.game.add.tween(this.dialogueText);
   moveDialogueText.to({ y: this.game.height + 20 }, tweenTime, Phaser.Easing.Cubic.InOut );

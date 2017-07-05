@@ -172,10 +172,10 @@ Gameplay.prototype.create = function () {
   this.dataPane.addChild(backing);
   this.portrait = this.game.add.sprite(12, this.game.height - 160 + 24, 'portraits', 0);
   this.dataPane.addChild(this.portrait);
-  this.selectedCharacterText = this.game.add.text(0, 0, '', { font: 'monospace', size: '16px' });
+  this.selectedCharacterText = this.game.add.bitmapText(0, 0, 'newsgeek', '', 12);
   this.selectedCharacterText.smoothed = false;
   this.dataPane.addChild(this.selectedCharacterText);
-  this.selectedCharacterText.position.set(0, 0);
+  this.selectedCharacterText.position.set(2, 2);
 
   // initialize ui logic
 
@@ -267,7 +267,7 @@ Gameplay.prototype.refreshPaneData = function () {
     var selectedPiece = selectedPieces[0];
     this.portrait.frame = PortraitMap[selectedPiece.name];
 
-    this.selectedCharacterText.text = selectedPiece.name + '\n love: ' + selectedPiece.hp + '\n type: ' + GameLogic.RomanceType.getStringName(selectedPiece.romanceType);
+    this.selectedCharacterText.text = selectedPiece.name + '\n love: ' + selectedPiece.hp + '\n' + GameLogic.RomanceType.getStringName(selectedPiece.romanceType);
   } else {
     this.portrait.frame = 0;
     this.selectedCharacterText.text = '';
@@ -384,6 +384,8 @@ Preload.prototype.preload = function () {
   this.game.load.spritesheet('map_sprites', 'asset/img/map_sprites.png', 16, 16);
 
   this.game.load.tilemap('test_map_1', 'asset/map/test_map_1.json', undefined, Phaser.Tilemap.TILED_JSON);
+
+  this.game.load.bitmapFont('newsgeek', 'asset/font/newsgeek.png', 'asset/font/newsgeek.json');
 };
 Preload.prototype.create = function() {
   this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);
