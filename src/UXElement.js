@@ -341,7 +341,7 @@ var DialogueUXElement = function(game, gameplayState) {
   this.textArea = this.game.add.sprite(54, this.game.height + 18, 'map_sprites', 5);
   this.textArea.width = this.game.width -120 + 16;
   this.textArea.height = 48 + 8;
-  this.dialogueText = this.game.add.bitmapText(60, this.game.height, 'newsgeek', 'I love flowers in the springtime. What happens if we add more dialogue? We could keep going, but we only get 4 lines max.', 12);
+  this.dialogueText = this.game.add.bitmapText(60, this.game.height, 'newsgeek', 'I love flowers in the springtime. What happens if we add more dialogue? We could keep going, but we only get 4 lines max. Keep going too. I want to see more and more. It\'d be easier if I was able to keep going as well. I want to keep typing.', 12);
   this.dialogueText.maxWidth = this.textArea.width - 8;
 
   this.backing = this.game.add.sprite(0, 0, 'map_sprites', 5);
@@ -389,10 +389,25 @@ DialogueUXElement.prototype.show = function(onHide) {
     this.game.time.events.add(300, function () {
 
       var childIndex = 0;
+      var topLineIndex = 0;
       var tickLettersLoop = this.game.time.events.loop(60, function () {
+        tickLettersLoop.delay = this.game.input.keyboard.isDown(Phaser.KeyCode.SHIFT) ? 20 : 60;
+
         this.dialogueText.children[childIndex].visible = true;
+        if (~~(this.dialogueText.children[childIndex].y / 12) - topLineIndex >= 4) {
+          topLineIndex++;
+          this.dialogueText.y -= 12;
+
+          for (var i = 0; i < this.dialogueText.children.length; i++) {
+            if (~~(this.dialogueText.children[i].y / 12) < topLineIndex) {
+              this.dialogueText.children[i].visible = false;
+            } else {
+              break;
+            }
+          }
+        }
+
         childIndex++;
-        tickLettersLoop.delay = this.game.input.keyboard.isDown(Phaser.KeyCode.SHIFT) ? 30 : 60;
 
         if (childIndex === this.dialogueText.children.length) {
           this.game.time.events.remove(tickLettersLoop);
