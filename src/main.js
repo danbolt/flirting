@@ -44,7 +44,7 @@ Gameplay.prototype.create = function () {
   this.boardState.teams.push('red');
   this.boardState.teams.push('blue');
 
-  this.ai = new DeadSimpleAI(1);
+  this.ai = new DumbMoveAI(1);
 
   mapLayer.layer.data.forEach(function (row, y) {
     this.boardState.terrain.push([]);
@@ -109,8 +109,8 @@ Gameplay.prototype.create = function () {
   this.boardState.pieces.push(heroe);
 
   var herof = new GameLogic.BoardPiece();
-  herof.position.x = 5;
-  herof.position.y = 7;
+  herof.position.x = 2;
+  herof.position.y = 3;
   herof.name = 'Jace';
   herof.hp = 5;
   herof.team = 0;
@@ -119,8 +119,8 @@ Gameplay.prototype.create = function () {
   this.boardState.pieces.push(herof);
 
   var herog = new GameLogic.BoardPiece();
-  herog.position.x = 5;
-  herog.position.y = 9;
+  herog.position.x = 1;
+  herog.position.y = 3;
   herog.name = 'Lester';
   herog.hp = 5;
   herog.team = 0;
@@ -207,9 +207,9 @@ Gameplay.prototype.create = function () {
   this.game.camera.follow(this.cursorUX.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
 
   this.game.input.keyboard.addKey(Phaser.KeyCode.ESC).onDown.add(function() {
-    //if (this.boardState.currentTurnTeam() === 0) {
+    if (this.boardState.currentTurnTeam() === 0 && this.animating === false && this.cursorUX.showing) {
       this.processCommand(new GameLogic.EndTurnCommand());
-    //}
+    }
   }, this);
 
   // handle UI logic
