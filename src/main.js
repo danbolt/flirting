@@ -266,6 +266,19 @@ Gameplay.prototype.update = function () {
   if (this.boardState.currentTurnTeam() === this.ai.teamIndex && this.animating === false) {
     this.processCommand(this.ai.getCommandForBoardState(this.boardState));
   }
+
+  if (this.boardState.currentTurnTeam() === 0 && this.animating === false && this.cursorUX.showing) {
+    var allPlayerPiecesMoved = true;
+    for (var i = 0; i < this.boardState.pieces.length; i++) {
+      if (this.boardState.pieces[i].team === 0 && this.boardState.movedThisTurn.indexOf(i) === -1) {
+        allPlayerPiecesMoved = false;
+        break;
+      }
+    }
+    if (allPlayerPiecesMoved === true) {
+      this.processCommand(new GameLogic.EndTurnCommand());
+    }
+  }
 };
 Gameplay.prototype.shutdown = function () {
   this.boardState = null;
