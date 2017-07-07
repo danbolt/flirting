@@ -14,9 +14,11 @@ PortraitMap['Lester'] = 9;
 
 var Gameplay = function () {
   this.boardState = null;
+  this.ai = null;
 
   // --- ui state
   this.tileSize = 16;
+  this.animating = false;
 
   // --- phaser ui data --
   this.cursor = null;
@@ -41,6 +43,8 @@ Gameplay.prototype.create = function () {
   this.boardState = new GameLogic.BoardState();
   this.boardState.teams.push('red');
   this.boardState.teams.push('blue');
+
+  this.ai = new DeadSimpleAI(1);
 
   mapLayer.layer.data.forEach(function (row, y) {
     this.boardState.terrain.push([]);
@@ -161,6 +165,8 @@ Gameplay.prototype.create = function () {
   }, this);
 
   // initialize ui
+  this.animating = false;
+
   this.dataPane = this.game.add.group();
   this.dataPane.fixedToCamera = true;
   this.dataPane.cameraOffset.x = this.game.width - 112;
@@ -256,6 +262,11 @@ Gameplay.prototype.create = function () {
 
   this.refreshBoardView();
 };
+Gameplay.prototype.update = function () {
+  if (this.boardState.currentTurnTeam() === this.ai.teamIndex && this.animating === false) {
+    this.processCommand(this.ai.getCommandForBoardState(this.boardState));
+  }
+};
 Gameplay.prototype.shutdown = function () {
   this.boardState = null;
 
@@ -280,9 +291,9 @@ Gameplay.prototype.refreshPaneData = function () {
   }
 };
 Gameplay.prototype.processCommand = function (command) {
+  if (this.animating === true) { return; }
+
   var results = GameLogic.ApplyCommand(this.boardState, command);
-
-
   if (results.length > 0) {
     // generate tweens for the results
     var resultTweens = [];
@@ -344,9 +355,11 @@ Gameplay.prototype.processCommand = function (command) {
 
       // if we've tweened right, a call to refreshBoardView shouldn't change anything
       resultTweens[resultTweens.length - 1].onComplete.add(function () {
+        this.animating = false;
         this.refreshBoardView();
       }, this);
 
+      this.animating = true;
       resultTweens[0].start();
       
     } else {
