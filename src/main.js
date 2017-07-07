@@ -159,7 +159,6 @@ Gameplay.prototype.create = function () {
     newCharacterOnMap.animations.play('idle');
     this.characterSprites.addChild(newCharacterOnMap);
   }, this);
-  this.refreshBoardView();
 
   // initialize ui
   this.dataPane = this.game.add.group();
@@ -176,6 +175,9 @@ Gameplay.prototype.create = function () {
   this.selectedCharacterText.smoothed = false;
   this.dataPane.addChild(this.selectedCharacterText);
   this.selectedCharacterText.position.set(2, 2);
+  this.turnInfoText = this.game.add.bitmapText(0, this.game.height - 16, 'newsgeek', 'TURN', 16);
+  this.turnInfoText.tint = 0xBB3333;
+  this.dataPane.addChild(this.turnInfoText);
 
   // initialize ui logic
 
@@ -197,6 +199,12 @@ Gameplay.prototype.create = function () {
   this.game.camera.width = this.game.width - 112;
   this.game.camera.setBoundsToWorld();
   this.game.camera.follow(this.cursorUX.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
+
+  this.game.input.keyboard.addKey(Phaser.KeyCode.ESC).onDown.add(function() {
+    //if (this.boardState.currentTurnTeam() === 0) {
+      this.processCommand(new GameLogic.EndTurnCommand());
+    //}
+  }, this);
 
   // handle UI logic
   this.currentUX = this.cursorUX;
@@ -245,6 +253,8 @@ Gameplay.prototype.create = function () {
     this.refreshPaneData();
   }, this);
 
+
+  this.refreshBoardView();
 };
 Gameplay.prototype.shutdown = function () {
   this.boardState = null;
@@ -352,7 +362,10 @@ Gameplay.prototype.refreshBoardView = function () {
     if (this.boardState.kos.indexOf(sprite.data.index) !== -1) {
       sprite.renderable = false;
     }
+    sprite.tint = (this.boardState.movedThisTurn.indexOf(sprite.data.index) !== -1 && this.boardState.currentTurnTeam() === this.boardState.pieces[sprite.data.index].team) ? 0x333333 : 0xFFFFFF;
   }, this);
+
+  this.turnInfoText.text = 'TURN ' + this.boardState.turn;
 };
 
 var Preload = function () {

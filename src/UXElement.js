@@ -71,8 +71,9 @@ SelectCharacterUXElement.prototype.onLeft = function() {
 };
 SelectCharacterUXElement.prototype.onConfirm = function() {
   var selectedPiece = this.gameplayState.boardState.getPieceForPosition(this.cursorX, this.cursorY);
+  var selectedPieceIndex = this.gameplayState.boardState.pieces.indexOf(selectedPiece);
 
-  if (selectedPiece !== null && selectedPiece.team === this.gameplayState.boardState.currentTurnTeam()) {
+  if (selectedPiece !== null && selectedPiece.team === this.gameplayState.boardState.currentTurnTeam() && this.gameplayState.boardState.movedThisTurn.indexOf(selectedPieceIndex) === -1) {
     return true;
   } else {
     return false;

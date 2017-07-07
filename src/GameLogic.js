@@ -87,6 +87,7 @@ var GameLogic = (function () {
     this.teams = [];
     this.kos = [];
     this.turn = 0;
+    this.movedThisTurn = [];
     this.terrain = []; // jagged 2d-array; first array is row, then value is column (eg: `this.terrain[y][x]`)
   };
   BoardState.prototype.currentTurnTeam = function () { return this.turn % this.teams.length; };
@@ -185,6 +186,8 @@ var GameLogic = (function () {
       // check if the character is alive
       var isCharacterAlive = boardState.kos.indexOf(moveCommand.piece) === -1;
 
+      var pieceMovedThisTurn = boardState.movedThisTurn.indexOf(moveCommand.piece) !== -1;
+
       // check if the path follows a linear movement
       var isPathConsistent = true;
       var step = { x: pieceToMove.position.x, y: pieceToMove.position.y };
@@ -218,7 +221,7 @@ var GameLogic = (function () {
       }, this);
 
       // ensure the piece is able to move the provided path
-      if (moveCommand.steps.length <= baseMoveDistance && isPathConsistent && destinationIsNotBlocked && isCharacterAlive) {
+      if (moveCommand.steps.length <= baseMoveDistance && isPathConsistent && destinationIsNotBlocked && isCharacterAlive && !pieceMovedThisTurn) {
         var moveResult = new MoveResult();
         moveResult.piece = moveCommand.piece;
         moveResult.steps = JSON.parse(JSON.stringify(moveCommand.steps));
@@ -285,7 +288,7 @@ var GameLogic = (function () {
   };
 
   var ApplyEndTurnCommand = function (boardState, endTurnCommand) {
-    return [ new EndTurnCommand() ];
+    return [ new EndTurnResult() ];
   }
 
   var ApplyCommand = function (boardState, command) {
@@ -308,6 +311,8 @@ var GameLogic = (function () {
       newBoardState.pieces[moveResult.piece].position.x = moveResult.steps[moveResult.steps.length - 1].x;
       newBoardState.pieces[moveResult.piece].position.y = moveResult.steps[moveResult.steps.length - 1].y;
     }
+
+    newBoardState.movedThisTurn.push(moveResult.piece);
 
     return newBoardState;
   };
@@ -339,6 +344,7 @@ var GameLogic = (function () {
     Object.setPrototypeOf(newBoardState, BoardState.prototype);
 
     newBoardState.turn++;
+    newBoardState.movedThisTurn = [];
 
     return newBoardState;
   };
