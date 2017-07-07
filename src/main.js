@@ -193,9 +193,6 @@ Gameplay.prototype.create = function () {
   stitch(this.styleUX, this.cursorUX);
 
   this.dialogueUX = new DialogueUXElement(this.game, this);
-  this.game.input.keyboard.addKey(Phaser.KeyCode.ENTER).onUp.add(function () {
-    this.dialogueUX.show();
-  }, this);
 
   this.game.camera.width = this.game.width - 112;
   this.game.camera.setBoundsToWorld();

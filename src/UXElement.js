@@ -311,6 +311,7 @@ SelectFlirtStyleUXElement.prototype.onConfirm = function() {
   command.target = this.targetIndex;
   command.style = this.styleIndex;
 
+  this.gameplayState.dialogueUX.dialogueData = Convos.Flirts.Bapi.Test;
   this.gameplayState.dialogueUX.portraitA.frame = PortraitMap[this.gameplayState.boardState.pieces[this.targetIndex].name];
   this.gameplayState.dialogueUX.portraitB.frame = PortraitMap[this.gameplayState.boardState.pieces[this.attackingPiece].name];
 
@@ -357,6 +358,8 @@ var DialogueUXElement = function(game, gameplayState) {
   this.elements.forEach(function (c) {
     c.visible = false;
   });
+
+  this.dialogueData = null;
 };
 DialogueUXElement.prototype = Object.create(UXElement.prototype);
 
@@ -387,10 +390,11 @@ DialogueUXElement.prototype.show = function(onHide) {
 
   moveDialogueText.onComplete.add(function () {
     this.game.time.events.add(300, function () {
+      var tickLettersLoop = null;
 
       var childIndex = 0;
       var topLineIndex = 0;
-      var tickLettersLoop = this.game.time.events.loop(60, function () {
+      var tickOneDialogueItem = function (onDone) {
         tickLettersLoop.delay = this.game.input.keyboard.isDown(Phaser.KeyCode.SHIFT) ? 20 : 60;
 
         this.dialogueText.children[childIndex].visible = true;
@@ -412,9 +416,31 @@ DialogueUXElement.prototype.show = function(onHide) {
         if (childIndex === this.dialogueText.children.length) {
           this.game.time.events.remove(tickLettersLoop);
 
-          this.game.time.events.add(300, this.hide, this);
+          onDone.call(this);
         }
-      }, this);
+      };
+
+      var dialogeIndex = 0;
+      var playOneDialogueItem = function () {
+        console.log('dialogeIndex' + dialogeIndex);
+        topLineIndex = 0;
+        childIndex = 0;
+        this.dialogueText.y = 120;
+        this.dialogueText.text = this.dialogueData[dialogeIndex].line;
+        this.dialogueText.children.forEach(function (c) { c.visible = false; });
+
+        tickLettersLoop = this.game.time.events.loop(60, tickOneDialogueItem, this, function () {
+          dialogeIndex++;
+
+          if (dialogeIndex < this.dialogueData.length) {
+            this.game.time.events.add(1450, playOneDialogueItem, this);
+          } else {
+            this.game.time.events.add(2000, this.hide, this);
+          }
+        });
+      };
+
+      this.game.time.events.add(100, playOneDialogueItem, this);
 
     }, this);
   }, this);
@@ -438,6 +464,8 @@ DialogueUXElement.prototype.hide = function() {
   var moveDialogueText = this.game.add.tween(this.dialogueText);
   moveDialogueText.to({ y: this.game.height + 20 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveDialogueText.start();
+
+  this.dialogueData = null;
 
   moveDialogueText.onComplete.add(function () { this.elements.forEachAlive(function (c) { c.visible = false; }); }, this);
 };
