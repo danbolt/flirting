@@ -182,7 +182,7 @@ Gameplay.prototype.create = function () {
   this.dataPane.addChild(this.selectedCharacterText);
   this.selectedCharacterText.position.set(2, 2);
   this.turnInfoText = this.game.add.bitmapText(0, this.game.height - 16, 'newsgeek', 'TURN', 16);
-  this.turnInfoText.tint = 0xBB3333;
+  this.turnInfoText.tint = 0xEE1112;
   this.dataPane.addChild(this.turnInfoText);
 
   // initialize ui logic
@@ -372,6 +372,7 @@ Gameplay.prototype.processCommand = function (command) {
               resultTweens.push(t2);
 
               firstTween = t1;
+              firstTween.onStart.add( function () { this.turnInfoText.text = 'TURN ' + this.boardState.turn; }, this); 
             } else {
               t1.chain(t2);
 

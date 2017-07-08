@@ -479,7 +479,7 @@ var TurnStartUXElement = function(game, gameplayState) {
   this.slideText.visible = false;
   this.slideText.anchor.set(0.5, 0.5);
   this.slideText.align = 'center';
-  this.slideText.tint = '0xFF0000';
+  this.slideText.tint = '0xEE1112';
 };
 TurnStartUXElement.prototype = Object.create(UXElement.prototype);
 TurnStartUXElement.prototype.show = function(onHide) {
