@@ -114,7 +114,7 @@ Gameplay.prototype.create = function () {
   herof.name = 'Jace';
   herof.hp = 5;
   herof.team = 0;
-  herof.romanceType = GameLogic.RomanceType.RUGGED;
+  herof.romanceType = GameLogic.RomanceType.STYLISH;
   herof.style = GameLogic.Style.NONE;
   this.boardState.pieces.push(herof);
 
@@ -218,6 +218,7 @@ Gameplay.prototype.create = function () {
   this.currentUX = this.cursorUX;
   this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     if (this.currentUX.onConfirm() === false) { return; }
 
     if (this.currentUX.confirm) {
@@ -228,6 +229,7 @@ Gameplay.prototype.create = function () {
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.BACKSPACE).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     if (this.currentUX.onBack() === false) { return; }
 
     if (this.currentUX.back) {
@@ -238,24 +240,28 @@ Gameplay.prototype.create = function () {
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.DOWN).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     this.currentUX.onDown();
 
     this.refreshPaneData();
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.UP).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     this.currentUX.onUp();
 
     this.refreshPaneData();
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     this.currentUX.onRight();
 
     this.refreshPaneData();
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     this.currentUX.onLeft();
 
     this.refreshPaneData();
@@ -350,8 +356,9 @@ Gameplay.prototype.processCommand = function (command) {
         var characterToMove = null;
         this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.piece) { characterToMove = sprite } });
 
+        var playerTeam = this.boardState.pieces[characterToMove.data.index].team === 0;
         var t = this.game.add.tween(characterToMove);
-        t.to( { alpha: 0 }, 100 );
+        t.to( { x: this.game.camera.x + (playerTeam ? 150 : -150) }, 1400, undefined, false, 500);
         resultTweens.push(t);
       } else if (result instanceof GameLogic.EndTurnResult) {
         var stubTween = this.game.add.tween(this.characterSprites.children[0]);
