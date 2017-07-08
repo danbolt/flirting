@@ -132,7 +132,7 @@ Gameplay.prototype.create = function () {
   testChar2.position.x = 2;
   testChar2.position.y = 4;
   testChar2.name = 'Fish';
-  testChar2.hp = 2;
+  testChar2.hp = 1;
   testChar2.team = 1;
   testChar2.style = GameLogic.Style.BOLD;
   testChar2.romanceType = GameLogic.RomanceType.CLEVER;
@@ -142,7 +142,7 @@ Gameplay.prototype.create = function () {
   testChar3.position.x = 3;
   testChar3.position.y = 5;
   testChar3.name = 'Joss';
-  testChar3.hp = 6;
+  testChar3.hp = 1;
   testChar3.team = 1;
   testChar3.style = GameLogic.Style.SWEET;
   testChar3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
@@ -271,10 +271,12 @@ Gameplay.prototype.create = function () {
   this.refreshBoardView();
 };
 Gameplay.prototype.update = function () {
+  // if it's the AI's turn and nothing is animating, process a turn this frame
   if (this.boardState.currentTurnTeam() === this.ai.teamIndex && this.animating === false) {
     this.processCommand(this.ai.getCommandForBoardState(this.boardState));
   }
 
+  // if we moved all our pieces, the turn is over!
   if (this.boardState.currentTurnTeam() === 0 && this.animating === false && this.cursorUX.showing) {
     var allPlayerPiecesMoved = true;
     for (var i = 0; i < this.boardState.pieces.length; i++) {
@@ -360,6 +362,23 @@ Gameplay.prototype.processCommand = function (command) {
         var t = this.game.add.tween(characterToMove);
         t.to( { x: this.game.camera.x + (playerTeam ? 150 : -150) }, 1400, undefined, false, 500);
         resultTweens.push(t);
+
+        // check if we've won the game
+        var teamsLost = this.boardState.teams.map(function () { return true; }); console.log(teamsLost);
+        this.boardState.pieces.forEach(function (piece, index) {
+          if (this.boardState.kos.indexOf(index) === -1) {
+            teamsLost[piece.team] = false;
+          }
+        }, this);
+
+        if (teamsLost[0]) {
+          // DANIEL MAKE A SICK TWEEN FOR LOSING
+          this.game.state.start('Gameplay');
+        } else if (teamsLost[1]) {
+          // K DANIEL NOW MAKE A SIIIIIICK TWEEEN FOR WINNING
+          this.game.state.start('Gameplay');
+        }
+
       } else if (result instanceof GameLogic.EndTurnResult) {
         var stubTween = this.game.add.tween(this.characterSprites.children[0]);
         stubTween.to( { x: this.characterSprites.children[0].x }, 10);
