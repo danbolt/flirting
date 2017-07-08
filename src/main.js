@@ -202,6 +202,8 @@ Gameplay.prototype.create = function () {
 
   this.dialogueUX = new DialogueUXElement(this.game, this);
 
+  this.turnShowUX = new TurnStartUXElement(this.game, this);
+
   this.game.camera.width = this.game.width - 112;
   this.game.camera.setBoundsToWorld();
   this.game.camera.follow(this.cursorUX.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
@@ -352,7 +354,38 @@ Gameplay.prototype.processCommand = function (command) {
         t.to( { alpha: 0 }, 100 );
         resultTweens.push(t);
       } else if (result instanceof GameLogic.EndTurnResult) {
-        //
+        var stubTween = this.game.add.tween(this.characterSprites.children[0]);
+        stubTween.to( { x: this.characterSprites.children[0].x }, 10);
+        stubTween.doNotChain = true;
+        resultTweens.push(stubTween);
+
+        var firstTween = null;
+        this.characterSprites.forEach(function(sprite) {
+          if (this.boardState.pieces[sprite.data.index].team === this.boardState.currentTurnTeam()) {
+            var t1 = this.game.add.tween(sprite);
+            t1.to( {y: sprite.y - Math.random() * 7 - 5}, 100 + Math.random() * 60, Phaser.Easing.Quadratic.In);
+            var t2 = this.game.add.tween(sprite);
+            t2.to( {y: sprite.y}, 120, Phaser.Easing.Quadratic.Out);
+
+            if (firstTween === null) {
+              resultTweens.push(t1);
+              resultTweens.push(t2);
+
+              firstTween = t1;
+            } else {
+              t1.chain(t2);
+
+              firstTween.onStart.add(function () { t1.start(); }, this);
+            }
+            
+          };
+        }, this);
+
+        stubTween.onComplete.add(function () {
+          this.turnShowUX.show(function () {
+            firstTween.start();
+          })
+        }, this);
       }
     }, this);
 
