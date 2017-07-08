@@ -332,10 +332,10 @@ Gameplay.prototype.processCommand = function (command) {
         this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.target) { characterToGetHitOn = sprite; } });
 
         var t1 = this.game.add.tween(characterToMove);
-        t1.to( { x: ((characterToMove.x + characterToGetHitOn.x) / 2), y: ((characterToMove.y + characterToGetHitOn.y) / 2) }, 50 );
+        t1.to( { x: ((characterToMove.x + characterToGetHitOn.x) / 2), y: ((characterToMove.y + characterToGetHitOn.y) / 2) }, 100 );
         resultTweens.push(t1);
         var t2 = this.game.add.tween(characterToMove);
-        t2.to( { x: characterToMove.x, y: characterToMove.y }, 50 );
+        t2.to( { x: characterToMove.x, y: characterToMove.y }, 100 );
         resultTweens.push(t2);
 
         t1.doNotChain = true;
