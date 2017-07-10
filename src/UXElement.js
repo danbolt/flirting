@@ -423,7 +423,6 @@ DialogueUXElement.prototype.show = function(onHide) {
 
       var dialogeIndex = 0;
       var playOneDialogueItem = function () {
-        console.log('dialogeIndex' + dialogeIndex);
         topLineIndex = 0;
         childIndex = 0;
         this.dialogueText.y = 120;
@@ -469,4 +468,49 @@ DialogueUXElement.prototype.hide = function() {
   this.dialogueData = null;
 
   moveDialogueText.onComplete.add(function () { this.elements.forEachAlive(function (c) { c.visible = false; }); }, this);
+};
+
+var TurnStartUXElement = function(game, gameplayState) {
+  UXElement.call(this, game);
+
+  this.gameplayState = gameplayState;
+
+  this.slideText = this.game.add.bitmapText(this.game.width / 2, this.game.height / 2, 'newsgeek', 'TURN', 16);
+  this.slideText.visible = false;
+  this.slideText.anchor.set(0.5, 0.5);
+  this.slideText.align = 'center';
+  this.slideText.tint = '0xEE1112';
+};
+TurnStartUXElement.prototype = Object.create(UXElement.prototype);
+TurnStartUXElement.prototype.show = function(onHide) {
+  UXElement.prototype.show.call(this, onHide);
+
+  this.slideText.visible = true;
+  this.slideText.x = -50;
+
+  if (this.gameplayState.boardState.currentTurnTeam() === 0) {
+    this.slideText.text = 'Player Turn';
+  } else {
+    this.slideText.text = 'Crush Turn';
+  }
+
+  var slideTextTweenA = this.game.add.tween(this.slideText);
+  slideTextTweenA.to( { x: this.game.width / 2 - 50 }, 500, Phaser.Easing.Cubic.In);
+  var slideTextTweenB = this.game.add.tween(this.slideText);
+  slideTextTweenB.to( { x: this.game.width / 2 + 25 }, 700, Phaser.Easing.Linear.None);
+  var slideTextTweenC = this.game.add.tween(this.slideText);
+  slideTextTweenC.to( { x: this.game.width + 100}, 800, Phaser.Easing.Cubic.Out);
+  slideTextTweenA.chain(slideTextTweenB);
+  slideTextTweenB.chain(slideTextTweenC);
+
+  slideTextTweenC.onComplete.add(function () {
+    this.hide();
+  }, this);
+
+  slideTextTweenA.start();
+};
+TurnStartUXElement.prototype.hide = function() {
+  UXElement.prototype.hide.call(this);
+
+  this.slideText.visible = false;
 };

@@ -114,7 +114,7 @@ Gameplay.prototype.create = function () {
   herof.name = 'Jace';
   herof.hp = 5;
   herof.team = 0;
-  herof.romanceType = GameLogic.RomanceType.RUGGED;
+  herof.romanceType = GameLogic.RomanceType.STYLISH;
   herof.style = GameLogic.Style.NONE;
   this.boardState.pieces.push(herof);
 
@@ -182,7 +182,7 @@ Gameplay.prototype.create = function () {
   this.dataPane.addChild(this.selectedCharacterText);
   this.selectedCharacterText.position.set(2, 2);
   this.turnInfoText = this.game.add.bitmapText(0, this.game.height - 16, 'newsgeek', 'TURN', 16);
-  this.turnInfoText.tint = 0xBB3333;
+  this.turnInfoText.tint = 0xEE1112;
   this.dataPane.addChild(this.turnInfoText);
 
   // initialize ui logic
@@ -202,6 +202,8 @@ Gameplay.prototype.create = function () {
 
   this.dialogueUX = new DialogueUXElement(this.game, this);
 
+  this.turnShowUX = new TurnStartUXElement(this.game, this);
+
   this.game.camera.width = this.game.width - 112;
   this.game.camera.setBoundsToWorld();
   this.game.camera.follow(this.cursorUX.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
@@ -216,6 +218,7 @@ Gameplay.prototype.create = function () {
   this.currentUX = this.cursorUX;
   this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     if (this.currentUX.onConfirm() === false) { return; }
 
     if (this.currentUX.confirm) {
@@ -226,6 +229,7 @@ Gameplay.prototype.create = function () {
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.BACKSPACE).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     if (this.currentUX.onBack() === false) { return; }
 
     if (this.currentUX.back) {
@@ -236,24 +240,28 @@ Gameplay.prototype.create = function () {
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.DOWN).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     this.currentUX.onDown();
 
     this.refreshPaneData();
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.UP).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     this.currentUX.onUp();
 
     this.refreshPaneData();
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     this.currentUX.onRight();
 
     this.refreshPaneData();
   }, this);
   this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT).onUp.add(function () {
     if (this.dialogueUX.showing === true) { return; }
+    if (this.animating === true) { return; }
     this.currentUX.onLeft();
 
     this.refreshPaneData();
@@ -332,10 +340,10 @@ Gameplay.prototype.processCommand = function (command) {
         this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.target) { characterToGetHitOn = sprite; } });
 
         var t1 = this.game.add.tween(characterToMove);
-        t1.to( { x: ((characterToMove.x + characterToGetHitOn.x) / 2), y: ((characterToMove.y + characterToGetHitOn.y) / 2) }, 50 );
+        t1.to( { x: ((characterToMove.x + characterToGetHitOn.x) / 2), y: ((characterToMove.y + characterToGetHitOn.y) / 2) }, 100 );
         resultTweens.push(t1);
         var t2 = this.game.add.tween(characterToMove);
-        t2.to( { x: characterToMove.x, y: characterToMove.y }, 50 );
+        t2.to( { x: characterToMove.x, y: characterToMove.y }, 100 );
         resultTweens.push(t2);
 
         t1.doNotChain = true;
@@ -348,11 +356,44 @@ Gameplay.prototype.processCommand = function (command) {
         var characterToMove = null;
         this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.piece) { characterToMove = sprite } });
 
+        var playerTeam = this.boardState.pieces[characterToMove.data.index].team === 0;
         var t = this.game.add.tween(characterToMove);
-        t.to( { alpha: 0 }, 100 );
+        t.to( { x: this.game.camera.x + (playerTeam ? 150 : -150) }, 1400, undefined, false, 500);
         resultTweens.push(t);
       } else if (result instanceof GameLogic.EndTurnResult) {
-        //
+        var stubTween = this.game.add.tween(this.characterSprites.children[0]);
+        stubTween.to( { x: this.characterSprites.children[0].x }, 10);
+        stubTween.doNotChain = true;
+        resultTweens.push(stubTween);
+
+        var firstTween = null;
+        this.characterSprites.forEach(function(sprite) {
+          if (this.boardState.pieces[sprite.data.index].team === this.boardState.currentTurnTeam()) {
+            var t1 = this.game.add.tween(sprite);
+            t1.to( {y: sprite.y - Math.random() * 7 - 5}, 100 + Math.random() * 60, Phaser.Easing.Quadratic.In);
+            var t2 = this.game.add.tween(sprite);
+            t2.to( {y: sprite.y}, 120, Phaser.Easing.Quadratic.Out);
+
+            if (firstTween === null) {
+              resultTweens.push(t1);
+              resultTweens.push(t2);
+
+              firstTween = t1;
+              firstTween.onStart.add( function () { this.turnInfoText.text = 'TURN ' + this.boardState.turn; }, this); 
+            } else {
+              t1.chain(t2);
+
+              firstTween.onStart.add(function () { t1.start(); }, this);
+            }
+            
+          };
+        }, this);
+
+        stubTween.onComplete.add(function () {
+          this.turnShowUX.show(function () {
+            firstTween.start();
+          })
+        }, this);
       }
     }, this);
 
