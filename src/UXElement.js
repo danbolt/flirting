@@ -315,6 +315,8 @@ SelectFlirtStyleUXElement.prototype.onConfirm = function() {
   this.gameplayState.dialogueUX.dialogueData = Convos.Flirts.Bapi.Test;
   this.gameplayState.dialogueUX.portraitA.frame = PortraitMap[this.gameplayState.boardState.pieces[this.targetIndex].name];
   this.gameplayState.dialogueUX.portraitB.frame = PortraitMap[this.gameplayState.boardState.pieces[this.attackingPiece].name];
+  this.gameplayState.dialogueUX.speakerNameA.text = this.gameplayState.boardState.pieces[this.targetIndex].name;
+  this.gameplayState.dialogueUX.speakerNameB.text = this.gameplayState.boardState.pieces[this.attackingPiece].name;
 
   this.gameplayState.processCommand(command);
 
@@ -345,6 +347,10 @@ var DialogueUXElement = function(game, gameplayState) {
   this.textArea.height = 48 + 8;
   this.dialogueText = this.game.add.bitmapText(60, this.game.height, 'newsgeek', 'I love flowers in the springtime. What happens if we add more dialogue? We could keep going, but we only get 4 lines max. Keep going too. I want to see more and more. It\'d be easier if I was able to keep going as well. I want to keep typing.', 12);
   this.dialogueText.maxWidth = this.textArea.width - 8;
+  this.speakerNameA = this.game.add.bitmapText(-50, 104, 'newsgeek', 'target', 12);
+  this.speakerNameB = this.game.add.bitmapText(this.game.width + 50, 104, 'newsgeek', 'speaker', 12);
+  this.speakerNameB.align = 'right';
+  this.speakerNameB.anchor.x = 1;
 
   this.backing = this.game.add.sprite(0, 0, 'map_sprites', 5);
   this.backing.width = this.game.width;
@@ -354,6 +360,8 @@ var DialogueUXElement = function(game, gameplayState) {
   this.elements.addChild(this.backing);
   this.elements.addChild(this.portraitA);
   this.elements.addChild(this.portraitB);
+  this.elements.addChild(this.speakerNameA);
+  this.elements.addChild(this.speakerNameB);
   this.elements.addChild(this.textArea);
   this.elements.addChild(this.dialogueText);
   this.elements.forEach(function (c) {
@@ -377,11 +385,17 @@ DialogueUXElement.prototype.show = function(onHide) {
   fadeBackingIn.to( { alpha: 0.5 } , tweenTime, Phaser.Easing.Cubic.Out);
   fadeBackingIn.start();
   var movePortraitA = this.game.add.tween(this.portraitA);
-  movePortraitA.to({x: 0, y:this.game.height-160}, tweenTime, Phaser.Easing.Cubic.InOut );
+  movePortraitA.to( {x: 0, y:this.game.height-160 }, tweenTime, Phaser.Easing.Cubic.InOut );
   movePortraitA.start();
   var movePortraitB = this.game.add.tween(this.portraitB);
-  movePortraitB.to({x: this.game.width-102, y:this.game.height-162}, tweenTime, Phaser.Easing.Cubic.InOut );
+  movePortraitB.to( {x: this.game.width-102, y:this.game.height-162 }, tweenTime, Phaser.Easing.Cubic.InOut );
   movePortraitB.start();
+  var moveTitleA = this.game.add.tween(this.speakerNameA);
+  moveTitleA.to({ x: this.textArea.x + 9 }, tweenTime, Phaser.Easing.Cubic.InOut );
+  moveTitleA.start();
+  var moveTitleB = this.game.add.tween(this.speakerNameB);
+  moveTitleB.to({ x: this.textArea.x + this.textArea.width - 9 }, tweenTime, Phaser.Easing.Cubic.InOut );
+  moveTitleB.start();
   var moveDialogueBacking = this.game.add.tween(this.textArea);
   moveDialogueBacking.to({ y: 116 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveDialogueBacking.start();
@@ -464,6 +478,12 @@ DialogueUXElement.prototype.hide = function() {
   var moveDialogueText = this.game.add.tween(this.dialogueText);
   moveDialogueText.to({ y: this.game.height + 20 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveDialogueText.start();
+  var moveTitleA = this.game.add.tween(this.speakerNameA);
+  moveTitleA.to({ x: -50 }, tweenTime, Phaser.Easing.Cubic.InOut );
+  moveTitleA.start();
+  var moveTitleB = this.game.add.tween(this.speakerNameB);
+  moveTitleB.to({ x: this.game.width + 50 }, tweenTime, Phaser.Easing.Cubic.InOut );
+  moveTitleB.start();
 
   this.dialogueData = null;
 
