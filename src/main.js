@@ -363,22 +363,6 @@ Gameplay.prototype.processCommand = function (command) {
         t.to( { x: this.game.camera.x + (playerTeam ? 150 : -150) }, 1400, undefined, false, 500);
         resultTweens.push(t);
 
-        // check if we've won the game
-        var teamsLost = this.boardState.teams.map(function () { return true; }); console.log(teamsLost);
-        this.boardState.pieces.forEach(function (piece, index) {
-          if (this.boardState.kos.indexOf(index) === -1) {
-            teamsLost[piece.team] = false;
-          }
-        }, this);
-
-        if (teamsLost[0]) {
-          // DANIEL MAKE A SICK TWEEN FOR LOSING
-          this.game.state.start('Gameplay');
-        } else if (teamsLost[1]) {
-          // K DANIEL NOW MAKE A SIIIIIICK TWEEEN FOR WINNING
-          this.game.state.start('Gameplay');
-        }
-
       } else if (result instanceof GameLogic.EndTurnResult) {
         var stubTween = this.game.add.tween(this.characterSprites.children[0]);
         stubTween.to( { x: this.characterSprites.children[0].x }, 10);
@@ -430,6 +414,22 @@ Gameplay.prototype.processCommand = function (command) {
       resultTweens[resultTweens.length - 1].onComplete.add(function () {
         this.animating = false;
         this.refreshBoardView();
+
+        // check if we've won the game
+        var teamsLost = this.boardState.teams.map(function () { return true; });
+        this.boardState.pieces.forEach(function (piece, index) {
+          if (this.boardState.kos.indexOf(index) === -1) {
+            teamsLost[piece.team] = false;
+          }
+        }, this);
+
+        if (teamsLost[0]) {
+          // DANIEL MAKE A SICK TWEEN FOR LOSING
+          this.game.state.start('Gameplay');
+        } else if (teamsLost[1]) {
+          // K DANIEL NOW MAKE A SIIIIIICK TWEEEN FOR WINNING
+          this.game.state.start('Gameplay');
+        }
       }, this);
 
       this.animating = true;
