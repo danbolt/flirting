@@ -312,7 +312,7 @@ SelectFlirtStyleUXElement.prototype.onConfirm = function() {
   command.target = this.targetIndex;
   command.style = this.styleIndex;
 
-  this.gameplayState.dialogueUX.dialogueData = Convos.Flirts.Bapi.Test;
+  this.gameplayState.dialogueUX.dialogueData = Convos.Flirts[this.gameplayState.boardState.pieces[this.attackingPiece].name].Test;
   this.gameplayState.dialogueUX.portraitA.frame = PortraitMap[this.gameplayState.boardState.pieces[this.targetIndex].name];
   this.gameplayState.dialogueUX.portraitB.frame = PortraitMap[this.gameplayState.boardState.pieces[this.attackingPiece].name];
   this.gameplayState.dialogueUX.speakerNameA.text = this.gameplayState.boardState.pieces[this.targetIndex].name;
@@ -380,6 +380,14 @@ DialogueUXElement.prototype.show = function(onHide) {
   this.elements.forEachAlive(function (c) { c.visible = true; });
   this.dialogueText.children.forEach(function (c) { c.visible = false; });
 
+  if (this.dialogueData[0].speaker === '<FLIRTER>') {
+    this.speakerNameA.visible = false;
+    this.speakerNameB.visible = true;
+  } else if (this.dialogueData[0].speaker === '<TARGET>') {
+    this.speakerNameA.visible = true;
+    this.speakerNameB.visible = false;
+  }
+
   var tweenTime = 600;
   var fadeBackingIn = this.game.add.tween(this.backing);
   fadeBackingIn.to( { alpha: 0.5 } , tweenTime, Phaser.Easing.Cubic.Out);
@@ -442,6 +450,13 @@ DialogueUXElement.prototype.show = function(onHide) {
         this.dialogueText.y = 120;
         this.dialogueText.text = this.dialogueData[dialogeIndex].line;
         this.dialogueText.children.forEach(function (c) { c.visible = false; });
+        if (this.dialogueData[dialogeIndex].speaker === '<FLIRTER>') {
+          this.speakerNameA.visible = false;
+          this.speakerNameB.visible = true;
+        } else if (this.dialogueData[dialogeIndex].speaker === '<TARGET>') {
+          this.speakerNameA.visible = true;
+          this.speakerNameB.visible = false;
+        }
 
         tickLettersLoop = this.game.time.events.loop(60, tickOneDialogueItem, this, function () {
           dialogeIndex++;
