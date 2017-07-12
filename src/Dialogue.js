@@ -3,7 +3,7 @@ var Convos = {
   {
     "Bapi":
     {
-      "Test": [
+      "Sweet": [
                {
                 "speaker": "<FLIRTER>",
                 "line": "Hey, I'm Bapi and I'm talking."
@@ -13,7 +13,7 @@ var Convos = {
                 "line": "You're talking to me?"
                }
               ],
-      "AltTest": [
+      "Bold": [
                    {
                     "speaker": "<FLIRTER>",
                     "line": "This is another one! Hmm, it has a little more punctuation too to see how things look."
@@ -34,11 +34,21 @@ var Convos = {
                     "speaker": "<FLIRTER>",
                     "line": "Oh, hey that makes odd sense!"
                    },
-                ]
+                ],
+      "Brash": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Hey, I'm Bapi and I'm talking."
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
     },
     "Chet":
     {
-      "Test": [
+      "Sweet": [
                {
                 "speaker": "<FLIRTER>",
                 "line": "Hey, I'm Chet and I'm talking."
@@ -47,11 +57,31 @@ var Convos = {
                 "speaker": "<TARGET>",
                 "line": "You're talking to me?"
                }
-              ]
+              ],
+      "Bold": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Chet's bold line."
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
+      "Brash": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Chet's brash line"
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
     },
     "Fish":
     {
-      "Test": [
+      "Sweet": [
                {
                 "speaker": "<FLIRTER>",
                 "line": "I AM A FISH"
@@ -60,11 +90,31 @@ var Convos = {
                 "speaker": "<TARGET>",
                 "line": "Wow..."
                }
-              ]
+              ],
+      "Bold": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Fish's bold line."
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
+      "Brash": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Fish's brash line"
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
     },
     "Yang":
     {
-      "Test": [
+      "Sweet": [
                {
                 "speaker": "<FLIRTER>",
                 "line": "Daniel's a big fan of Final Fantasy IV."
@@ -73,11 +123,31 @@ var Convos = {
                 "speaker": "<TARGET>",
                 "line": "I can tell."
                }
-              ]
+              ],
+      "Bold": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Yang's bold line."
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
+      "Brash": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Yang's brash line"
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
     },
     "Joss":
     {
-      "Test": [
+      "Sweet": [
                {
                 "speaker": "<FLIRTER>",
                 "line": "Flirt flirt flirt! I'm not Joss Whedon."
@@ -86,11 +156,31 @@ var Convos = {
                 "speaker": "<TARGET>",
                 "line": "But I looooooove Firefly!"
                }
-              ]
+              ],
+      "Bold": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Joss's bold line."
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
+      "Brash": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Joss's brash line"
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
     },
     "Sanders":
     {
-      "Test": [
+      "Sweet": [
                {
                 "speaker": "<FLIRTER>",
                 "line": "I was the first name Daniel wrote that wasn't four letters long."
@@ -99,11 +189,31 @@ var Convos = {
                 "speaker": "<TARGET>",
                 "line": "A plus plus bro."
                }
-              ]
+              ],
+      "Bold": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Sanders' bold line."
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
+      "Brash": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Sanders' brash line"
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
     },
     "Neil":
     {
-      "Test": [
+      "Sweet": [
                {
                 "speaker": "<FLIRTER>",
                 "line": "On your knees! Kneel before Neil!"
@@ -112,11 +222,31 @@ var Convos = {
                 "speaker": "<TARGET>",
                 "line": "Bad puns ahoy!"
                }
-              ]
+              ],
+      "Bold": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Neil's bold line."
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "lol k neil"
+                 }
+              ],
+      "Brash": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Neil's brash line"
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
     },
     "Jace":
     {
-      "Test": [
+      "Sweet": [
                {
                 "speaker": "<FLIRTER>",
                 "line": "How is this? Am I a cool sly flirter now?"
@@ -125,11 +255,31 @@ var Convos = {
                 "speaker": "<TARGET>",
                 "line": "Good God..."
                }
-              ]
+              ],
+      "Bold": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Jace's bold line."
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
+      "Brash": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Jace's brash line"
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
     },
     "Lester":
     {
-      "Test": [
+      "Sweet": [
                {
                 "speaker": "<FLIRTER>",
                 "line": "Daniel's running out of names now."
@@ -138,7 +288,27 @@ var Convos = {
                 "speaker": "<TARGET>",
                 "line": "How big is the cast going to be?"
                }
-              ]
+              ],
+      "Bold": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Lester's bold line."
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
+      "Brash": [
+                 {
+                  "speaker": "<FLIRTER>",
+                  "line": "Lester's brash line"
+                 },
+                 {
+                  "speaker": "<TARGET>",
+                  "line": "You're talking to me?"
+                 }
+              ],
     },
   },
   "Other": {

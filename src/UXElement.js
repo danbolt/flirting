@@ -312,7 +312,7 @@ SelectFlirtStyleUXElement.prototype.onConfirm = function() {
   command.target = this.targetIndex;
   command.style = this.styleIndex;
 
-  this.gameplayState.dialogueUX.dialogueData = Convos.Flirts[this.gameplayState.boardState.pieces[this.attackingPiece].name].Test;
+  this.gameplayState.dialogueUX.dialogueData = Convos.Flirts[this.gameplayState.boardState.pieces[this.attackingPiece].name][GameLogic.Style.getStringName(this.styleIndex)];
   this.gameplayState.dialogueUX.portraitA.frame = PortraitMap[this.gameplayState.boardState.pieces[this.targetIndex].name];
   this.gameplayState.dialogueUX.portraitB.frame = PortraitMap[this.gameplayState.boardState.pieces[this.attackingPiece].name];
   this.gameplayState.dialogueUX.speakerNameA.text = this.gameplayState.boardState.pieces[this.targetIndex].name;
