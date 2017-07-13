@@ -348,6 +348,10 @@ Gameplay.prototype.processCommand = function (command) {
         t2.to( { x: characterToMove.x, y: characterToMove.y }, 100 );
         resultTweens.push(t2);
 
+        if (this.boardState.pieces[result.target].hp <= 0) {
+          this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.Success.Generic[0]);
+        }
+
         t1.doNotChain = true;
         t1.onComplete.add(function () {
           this.dialogueUX.show(function () {

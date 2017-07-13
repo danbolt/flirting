@@ -311,6 +311,35 @@ var Convos = {
               ],
     },
   },
+  "Success": {
+    "Generic":
+              [
+                [
+                  {
+                   "speaker": "<FLIRTER>",
+                   "line": "Hey let's date."
+                  },
+                  {
+                   "speaker": "<TARGET>",
+                   "line": "Yeah. I gotta go get ready!"
+                  }
+                ],
+                [
+                  {
+                   "speaker": "<TARGET>",
+                   "line": "Uhhh..."
+                  },
+                  {
+                    speaker: "<FLIRTER>",
+                    "line": "You free later?"
+                  },
+                  {
+                    speaker: "<TARGET>",
+                    "line": "Yeah, I'll see you then!"
+                  }
+                ]
+              ]
+  },
   "Other": {
     //
   },
