@@ -348,8 +348,11 @@ Gameplay.prototype.processCommand = function (command) {
         t2.to( { x: characterToMove.x, y: characterToMove.y }, 100 );
         resultTweens.push(t2);
 
+        var damageResult = GameLogic.ComputeAttackDamage( result.style, this.boardState.pieces[result.target].style, this.boardState.pieces[result.attacker].romanceType, this.boardState.pieces[result.target].romanceType);
+        this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.Responses.Generic[damageResult][~~(Math.random() * Convos.Responses.Generic[damageResult].length)]);
+
         if (this.boardState.pieces[result.target].hp <= 0) {
-          this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.Success.Generic[0]);
+          this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.Success.Generic[~~(Convos.Success.Generic.length * Math.random())]);
         }
 
         t1.doNotChain = true;

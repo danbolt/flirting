@@ -362,6 +362,7 @@ var GameLogic = (function () {
 
   gameLogic.Style = Style;
   gameLogic.RomanceType = RomanceType;
+  gameLogic.ComputeAttackDamage = ComputeAttackDamage;
   gameLogic.BoardState = BoardState;
   gameLogic.BoardPiece = BoardPiece;
   gameLogic.Command = Command;
