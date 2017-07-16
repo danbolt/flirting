@@ -324,6 +324,50 @@ var Convos = {
   "Failure": {
     //
   },
+  "Dissing": {
+    "Generic": [
+                  [
+                    {
+                      speaker: "<TARGET>",
+                      "line": "What's your deal? Why are you even here?"
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<TARGET>",
+                      "line": "Get outta here! Can't you see I'm in the middle of something?"
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<TARGET>",
+                      "line": "I don't understand your getup at all."
+                    },
+                  ],
+               ]
+  },
+  "DissResponse": {
+    "Generic": [
+                  [
+                    {
+                      speaker: "<FLIRTER>",
+                      "line": "Ugh..."
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<FLIRTER>",
+                      "line": "This is discouraging..."
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<FLIRTER>",
+                      "line": "Oh..."
+                    },
+                  ],
+               ]
+  },
   "Other": {
     //
   },

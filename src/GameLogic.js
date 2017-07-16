@@ -88,6 +88,7 @@ var GameLogic = (function () {
     this.kos = [];
     this.turn = 0;
     this.movedThisTurn = [];
+    this.attackedThisTurn = [];
     this.terrain = []; // jagged 2d-array; first array is row, then value is column (eg: `this.terrain[y][x]`)
   };
   BoardState.prototype.currentTurnTeam = function () { return this.turn % this.teams.length; };
@@ -249,6 +250,10 @@ var GameLogic = (function () {
       return []
     }
 
+    if (boardState.attackedThisTurn.indexOf(attackCommand.attacker) !== -1) {
+      return []
+    }
+
     var attackerPiece = boardState.pieces[attackCommand.attacker];
     var targetPiece = boardState.pieces[attackCommand.target];
 
@@ -326,6 +331,8 @@ var GameLogic = (function () {
     var damage = ComputeAttackDamage(attackResult.style, targetPiece.style, attackerPiece.romanceType, targetPiece.romanceType);
     targetPiece.hp -= damage;
 
+    newBoardState.attackedThisTurn.push(attackResult.attacker);
+
     return newBoardState;
   };
   var ApplyKnockoutResult = function (boardState, knockoutResult) {
@@ -345,6 +352,7 @@ var GameLogic = (function () {
 
     newBoardState.turn++;
     newBoardState.movedThisTurn = [];
+    newBoardState.attackedThisTurn = [];
 
     return newBoardState;
   };

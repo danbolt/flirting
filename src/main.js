@@ -114,7 +114,7 @@ Gameplay.prototype.create = function () {
   herof.name = 'Jace';
   herof.hp = 5;
   herof.team = 0;
-  herof.romanceType = GameLogic.RomanceType.STYLISH;
+  herof.romanceType = GameLogic.RomanceType.RUGGED;
   herof.style = GameLogic.Style.NONE;
   this.boardState.pieces.push(herof);
 
@@ -348,16 +348,26 @@ Gameplay.prototype.processCommand = function (command) {
         t2.to( { x: characterToMove.x, y: characterToMove.y }, 100 );
         resultTweens.push(t2);
 
-        var damageResult = GameLogic.ComputeAttackDamage( result.style, this.boardState.pieces[result.target].style, this.boardState.pieces[result.attacker].romanceType, this.boardState.pieces[result.target].romanceType);
-        this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.Responses.Generic[damageResult][~~(Math.random() * Convos.Responses.Generic[damageResult].length)]);
+        if (this.boardState.pieces[result.attacker].team === 0) {
+          var damageResult = GameLogic.ComputeAttackDamage( result.style, this.boardState.pieces[result.target].style, this.boardState.pieces[result.attacker].romanceType, this.boardState.pieces[result.target].romanceType);
+          this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.Responses.Generic[damageResult][~~(Math.random() * Convos.Responses.Generic[damageResult].length)]);
 
-        if (this.boardState.pieces[result.target].hp <= 0) {
-          this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.Success.Generic[~~(Convos.Success.Generic.length * Math.random())]);
+          if (this.boardState.pieces[result.target].hp <= 0) {
+            this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.Success.Generic[~~(Convos.Success.Generic.length * Math.random())]);
+          }
+        } else if (this.boardState.pieces[result.attacker].team === 1) {
+          this.dialogueUX.dialogueData = Convos.Dissing.Generic[~~(Convos.Dissing.Generic.length * Math.random())];
+          this.dialogueUX.portraitA.frame = PortraitMap[this.boardState.pieces[result.attacker].name];
+          this.dialogueUX.portraitB.frame = PortraitMap[this.boardState.pieces[result.target].name];
+          this.dialogueUX.speakerNameA.text = this.boardState.pieces[result.attacker].name;
+          this.dialogueUX.speakerNameB.text = this.boardState.pieces[result.target].name;
         }
 
         t1.doNotChain = true;
         t1.onComplete.add(function () {
+          var gameplay = this;
           this.dialogueUX.show(function () {
+            gameplay.refreshPaneData();
             t2.start();
           });
         }, this);
