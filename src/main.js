@@ -154,10 +154,24 @@ Gameplay.prototype.create = function () {
     var newCharacterOnMap = this.game.add.sprite(piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'map_sprites', 32);
     newCharacterOnMap.data.index = index;
 
+    /*
     if (piece.team === 0) {
       newCharacterOnMap.animations.add('idle', [32, 33, 34], 3, true);
     } else {
       newCharacterOnMap.animations.add('idle', [35, 36, 37], 3, true);
+    }*/
+
+    // This should probably just be math'd for the index, but at the moment we haven't made sprites for everyone yet
+    if (piece.name === 'Bapi') {
+      newCharacterOnMap.animations.add('idle', [32, 33, 34], 3, true);
+    } else if (piece.name === 'Chet') {
+      newCharacterOnMap.animations.add('idle', [35, 36, 37], 3, true);
+    } else if (piece.name === 'Fish') {
+      newCharacterOnMap.animations.add('idle', [38, 39, 40], 3, true);
+    } else if (piece.name === 'Yang') {
+      newCharacterOnMap.animations.add('idle', [41, 42, 43], 3, true);
+    } else {
+      newCharacterOnMap.animations.add('idle', [29, 30, 31], 3, true);
     }
 
     newCharacterOnMap.animations.play('idle');
