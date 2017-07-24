@@ -354,9 +354,10 @@ var DialogueUXElement = function(game, gameplayState) {
   this.portraitA = this.game.add.sprite(           -100, this.game.height - 140, 'portraits', 1);
   this.portraitB = this.game.add.sprite(this.game.width, this.game.height - 140, 'portraits', 2);
 
-  this.textArea = this.game.add.sprite(54, this.game.height + 18, 'map_sprites', 5);
-  this.textArea.width = this.game.width -120 + 16;
-  this.textArea.height = 48 + 8;
+  //this.textArea = this.game.add.sprite(54, this.game.height + 18, 'map_sprites', 5);
+  //this.textArea.width = this.game.width -120 + 16;
+  //this.textArea.height = 48 + 8;
+  this.textArea = new NineSliceMenu(this.game, 54, this.game.height + 18, this.game.width - 120 + 16, 48 + 8);
   this.dialogueText = this.game.add.bitmapText(60, this.game.height, 'newsgeek', 'I love flowers in the springtime. What happens if we add more dialogue? We could keep going, but we only get 4 lines max. Keep going too. I want to see more and more. It\'d be easier if I was able to keep going as well. I want to keep typing.', 12);
   this.dialogueText.maxWidth = this.textArea.width - 8;
   this.speakerNameA = this.game.add.bitmapText(-50, 104, 'newsgeek', 'target', 12);
@@ -420,7 +421,7 @@ DialogueUXElement.prototype.show = function(onHide) {
   moveDialogueBacking.to({ y: 116 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveDialogueBacking.start();
   var moveDialogueText = this.game.add.tween(this.dialogueText);
-  moveDialogueText.to({ y: 120 }, tweenTime, Phaser.Easing.Cubic.InOut );
+  moveDialogueText.to({ y: 122 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveDialogueText.start();
 
   moveDialogueText.onComplete.add(function () {
@@ -459,7 +460,7 @@ DialogueUXElement.prototype.show = function(onHide) {
       var playOneDialogueItem = function () {
         topLineIndex = 0;
         childIndex = 0;
-        this.dialogueText.y = 120;
+        this.dialogueText.y = 122;
         this.dialogueText.text = this.dialogueData[dialogeIndex].line;
         this.dialogueText.children.forEach(function (c) { c.visible = false; });
         if (this.dialogueData[dialogeIndex].speaker === '<FLIRTER>') {
@@ -593,3 +594,36 @@ TurnStartUXElement.prototype.hide = function() {
 
   this.slideText.visible = false;
 };
+
+
+
+// Sprite Utils
+var NineSliceMenu = function (game, x, y, width, height) {
+  Phaser.Group.call(this, game);
+
+  this.x = x;
+  this.y = y;
+
+  var topLeftCorner = this.addChild(this.game.add.sprite(0, 0, 'map_sprites', 125));
+  var topRightCorner = this.addChild(this.game.add.sprite(width - 16, 0, 'map_sprites', 127));
+  var middle = this.addChild(this.game.add.sprite(16, 16, 'map_sprites', 142));
+  var bottomRightCorner = this.addChild(this.game.add.sprite(32, 32, 'map_sprites', 159));
+  var bottomLeftCorner = this.addChild(this.game.add.sprite(0, 32, 'map_sprites', 157));
+  var topEdge = this.addChild(this.game.add.sprite(16, 0, 'map_sprites', 126));
+  var bottomEdge = this.addChild(this.game.add.sprite(16, height - 16, 'map_sprites', 158));
+  var rightEdge = this.addChild(this.game.add.sprite(width - 16, 16, 'map_sprites', 143));
+  var leftEdge = this.addChild(this.game.add.sprite(0, 16, 'map_sprites', 141));
+
+  // resize the pieces
+  middle.width = width - 32;
+  middle.height = height - 32;
+  bottomRightCorner.x = width - 16;
+  bottomRightCorner.y = height - 16;
+  bottomLeftCorner.y = height - 16;
+  topEdge.width = width - 32;
+  bottomEdge.width = width - 32;
+  rightEdge.height = height - 32;
+  leftEdge.height = height - 32;
+};
+NineSliceMenu.prototype = Object.create(Phaser.Group.prototype);
+NineSliceMenu.prototype.constructor = NineSliceMenu;

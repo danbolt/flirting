@@ -178,17 +178,18 @@ Gameplay.prototype.create = function () {
   this.dataPane.fixedToCamera = true;
   this.dataPane.cameraOffset.x = this.game.width - 112;
 
-  var backing = this.game.add.sprite(0, 0, 'map_sprites', 3);
+  var backing = this.game.add.sprite(0, 0, 'map_sprites', 5);
   backing.width = 112;
   backing.height = this.game.height;
   this.dataPane.addChild(backing);
+  this.dataPane.addChild(new NineSliceMenu(this.game, 0, 0, backing.width, backing.height));
   this.portrait = this.game.add.sprite(12, this.game.height - 160 + 24, 'portraits', 0);
   this.dataPane.addChild(this.portrait);
   this.selectedCharacterText = this.game.add.bitmapText(0, 0, 'newsgeek', '', 12);
   this.selectedCharacterText.smoothed = false;
   this.dataPane.addChild(this.selectedCharacterText);
-  this.selectedCharacterText.position.set(2, 2);
-  this.turnInfoText = this.game.add.bitmapText(0, this.game.height - 16, 'newsgeek', 'TURN', 16);
+  this.selectedCharacterText.position.set(8, 8);
+  this.turnInfoText = this.game.add.bitmapText(4, this.game.height - 16 - 4, 'newsgeek', 'TURN', 16);
   this.turnInfoText.tint = 0xEE1112;
   this.dataPane.addChild(this.turnInfoText);
 
