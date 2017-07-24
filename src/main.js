@@ -50,13 +50,17 @@ Gameplay.prototype.create = function () {
     this.boardState.terrain.push([]);
 
     row.forEach(function (t, x) {
-      if (t.index === 3) {
+      if ([5, 6, 7, 8, 9, 90, 10, 11, 12, 13, 14, 28, 29, 86, 87, 102, 103].indexOf(t.index) === -1) {
         this.boardState.terrain[y].push(0);
       } else {
         this.boardState.terrain[y].push(1);
       }
     }, this);
   }, this);
+
+  this.boardState.terrain.forEach((y, i) => {
+    console.log(i +  (i < 10 ? " :" : ":") + y[0] + y[1] + y[2] + y[3] + y[4] + y[5] + y[6] + y[7] + y[8] + y[9] + y[10])
+  });
 
   var testChar1 = new GameLogic.BoardPiece();
   testChar1.position.x = 7;
