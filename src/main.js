@@ -349,9 +349,11 @@ Gameplay.prototype.processCommand = function (command) {
           }
         }, this);
 
-        var pause = this.game.add.tween(characterToMove);
-        pause.to({}, 400);
-        resultTweens.push(pause);
+        if (this.boardState.currentTurnTeam() === 1) {
+          var pause = this.game.add.tween(characterToMove);
+          pause.to({}, 400);
+          resultTweens.push(pause);
+        }
       } else if (result instanceof GameLogic.AttackResult) {
         var characterToMove = null;
         this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.attacker) { characterToMove = sprite; } });

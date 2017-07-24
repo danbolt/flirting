@@ -473,14 +473,14 @@ DialogueUXElement.prototype.show = function(onHide) {
         var shakeSprite = function (portrait) {
           var tweens = [];
 
-          for (var i = 0; i < 5; i++) {
+          for (var i = 0; i < 7; i++) {
             var t = this.game.add.tween(portrait);
-            t.to( { x: portrait.x + ~~(Math.random() * 16) - 8, y: portrait.y + ~~(Math.random() * 8) }, 100);
+            t.to( { x: portrait.x + ~~(Math.random() * 16) - 8, y: portrait.y + ~~(Math.random() * 8) }, 50);
             tweens.push(t);
 
-            if (i === 5) {
+            if (i === 6) {
               var t = this.game.add.tween(this.portraitA.cameraOffset);
-              t.to( { x: portrait.x, y: portrait.y }, 100);
+              t.to( { x: portrait.x, y: portrait.y }, 50);
               tweens.push(t);
             }
           }
