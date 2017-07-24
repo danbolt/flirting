@@ -515,13 +515,16 @@ var TurnStartUXElement = function(game, gameplayState) {
   this.slideText.anchor.set(0.5, 0.5);
   this.slideText.align = 'center';
   this.slideText.tint = '0xEE1112';
+  this.slideText.fixedToCamera = true;
 };
 TurnStartUXElement.prototype = Object.create(UXElement.prototype);
 TurnStartUXElement.prototype.show = function(onHide) {
   UXElement.prototype.show.call(this, onHide);
 
+  this.game.camera.follow(this.gameplayState.cursorUX.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
+
   this.slideText.visible = true;
-  this.slideText.x = -50;
+  this.slideText.cameraOffset.x = -50;
 
   if (this.gameplayState.boardState.currentTurnTeam() === 0) {
     this.slideText.text = 'Player Turn';
@@ -529,11 +532,11 @@ TurnStartUXElement.prototype.show = function(onHide) {
     this.slideText.text = 'Crush Turn';
   }
 
-  var slideTextTweenA = this.game.add.tween(this.slideText);
+  var slideTextTweenA = this.game.add.tween(this.slideText.cameraOffset);
   slideTextTweenA.to( { x: this.game.width / 2 - 50 }, 500, Phaser.Easing.Cubic.In);
-  var slideTextTweenB = this.game.add.tween(this.slideText);
+  var slideTextTweenB = this.game.add.tween(this.slideText.cameraOffset);
   slideTextTweenB.to( { x: this.game.width / 2 + 25 }, 700, Phaser.Easing.Linear.None);
-  var slideTextTweenC = this.game.add.tween(this.slideText);
+  var slideTextTweenC = this.game.add.tween(this.slideText.cameraOffset);
   slideTextTweenC.to( { x: this.game.width + 100}, 800, Phaser.Easing.Cubic.Out);
   slideTextTweenA.chain(slideTextTweenB);
   slideTextTweenB.chain(slideTextTweenC);

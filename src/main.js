@@ -158,13 +158,6 @@ Gameplay.prototype.create = function () {
     var newCharacterOnMap = this.game.add.sprite(piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'map_sprites', 32);
     newCharacterOnMap.data.index = index;
 
-    /*
-    if (piece.team === 0) {
-      newCharacterOnMap.animations.add('idle', [32, 33, 34], 3, true);
-    } else {
-      newCharacterOnMap.animations.add('idle', [35, 36, 37], 3, true);
-    }*/
-
     // This should probably just be math'd for the index, but at the moment we haven't made sprites for everyone yet
     if (piece.name === 'Bapi') {
       newCharacterOnMap.animations.add('idle', [32, 33, 34], 3, true);
@@ -285,6 +278,7 @@ Gameplay.prototype.create = function () {
     this.refreshPaneData();
   }, this);
 
+  this.game.world.bringToTop(this.dataPane);
 
   this.refreshBoardView();
 };
@@ -341,17 +335,29 @@ Gameplay.prototype.processCommand = function (command) {
 
     results.forEach(function (result) {
       this.boardState = GameLogic.ApplyResult(this.boardState, result);
-
       
       if (result instanceof GameLogic.MoveResult) {
         var characterToMove = null;
         this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.piece) { characterToMove = sprite } });
 
+        var setCamera = false;
         result.steps.forEach(function (step) {
           var t = this.game.add.tween(characterToMove);
           t.to( { x: step.x * this.tileSize, y: step.y * this.tileSize }, 100 );
           resultTweens.push(t);
+
+          if (setCamera === false) {
+            t.onStart.add(function () {
+              this.game.camera.follow(characterToMove, Phaser.Camera.FOLLOW_TOPDOWN, 0.4, 0.4);
+            }, this);
+
+            setCamera = true;
+          }
         }, this);
+
+        var pause = this.game.add.tween(characterToMove);
+        pause.to({}, 400);
+        resultTweens.push(pause);
       } else if (result instanceof GameLogic.AttackResult) {
         var characterToMove = null;
         this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.attacker) { characterToMove = sprite; } });
@@ -365,6 +371,10 @@ Gameplay.prototype.processCommand = function (command) {
         var t2 = this.game.add.tween(characterToMove);
         t2.to( { x: characterToMove.x, y: characterToMove.y }, 100 );
         resultTweens.push(t2);
+
+        t1.onStart.add(function () {
+          this.game.camera.follow(characterToMove, Phaser.Camera.FOLLOW_TOPDOWN, 0.4, 0.4);
+        }, this);
 
         if (this.boardState.pieces[result.attacker].team === 0) {
           var damageResult = GameLogic.ComputeAttackDamage( result.style, this.boardState.pieces[result.target].style, this.boardState.pieces[result.attacker].romanceType, this.boardState.pieces[result.target].romanceType);
