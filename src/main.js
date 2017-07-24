@@ -346,7 +346,7 @@ Gameplay.prototype.processCommand = function (command) {
           t.to( { x: step.x * this.tileSize, y: step.y * this.tileSize }, 100 );
           resultTweens.push(t);
 
-          if (setCamera === false) {
+          if (setCamera === false && this.boardState.currentTurnTeam() === 1) {
             t.onStart.add(function () {
               this.game.camera.follow(characterToMove, Phaser.Camera.FOLLOW_TOPDOWN, 0.4, 0.4);
             }, this);
@@ -372,9 +372,11 @@ Gameplay.prototype.processCommand = function (command) {
         t2.to( { x: characterToMove.x, y: characterToMove.y }, 100 );
         resultTweens.push(t2);
 
-        t1.onStart.add(function () {
-          this.game.camera.follow(characterToMove, Phaser.Camera.FOLLOW_TOPDOWN, 0.4, 0.4);
-        }, this);
+        if (this.boardState.currentTurnTeam() === 1) {
+          t1.onStart.add(function () {
+            this.game.camera.follow(characterToMove, Phaser.Camera.FOLLOW_TOPDOWN, 0.4, 0.4);
+          }, this);
+        }
 
         if (this.boardState.pieces[result.attacker].team === 0) {
           var damageResult = GameLogic.ComputeAttackDamage( result.style, this.boardState.pieces[result.target].style, this.boardState.pieces[result.attacker].romanceType, this.boardState.pieces[result.target].romanceType);
