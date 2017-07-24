@@ -58,10 +58,6 @@ Gameplay.prototype.create = function () {
     }, this);
   }, this);
 
-  this.boardState.terrain.forEach((y, i) => {
-    console.log(i +  (i < 10 ? " :" : ":") + y[0] + y[1] + y[2] + y[3] + y[4] + y[5] + y[6] + y[7] + y[8] + y[9] + y[10])
-  });
-
   var testChar1 = new GameLogic.BoardPiece();
   testChar1.position.x = 7;
   testChar1.position.y = 2;
@@ -277,8 +273,6 @@ Gameplay.prototype.create = function () {
 
     this.refreshPaneData();
   }, this);
-
-  this.game.world.bringToTop(this.dataPane);
 
   this.refreshBoardView();
 };

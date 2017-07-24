@@ -246,13 +246,15 @@ var Convos = {
               [
                 {
                   "speaker": "<TARGET>",
-                  "line": "Hot damn..."
+                  "line": "Hot damn...",
+                  "targetStagger": true
                 }
               ],
               [
                 {
                   "speaker": "<TARGET>",
-                  "line": "Are you always this hunky?" //LOLOLOLOL I NEED SLEEP WHAT DID I WRITE
+                  "line": "Are you always this hunky?", //LOLOLOLOL I NEED SLEEP WHAT DID I WRITE
+                  "targetStagger": true 
                 }
               ],
            ],

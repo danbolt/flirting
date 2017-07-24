@@ -470,6 +470,35 @@ DialogueUXElement.prototype.show = function(onHide) {
           this.speakerNameB.visible = false;
         }
 
+        var shakeSprite = function (portrait) {
+          var tweens = [];
+
+          for (var i = 0; i < 5; i++) {
+            var t = this.game.add.tween(portrait);
+            t.to( { x: portrait.x + ~~(Math.random() * 16) - 8, y: portrait.y + ~~(Math.random() * 8) }, 100);
+            tweens.push(t);
+
+            if (i === 5) {
+              var t = this.game.add.tween(this.portraitA.cameraOffset);
+              t.to( { x: portrait.x, y: portrait.y }, 100);
+              tweens.push(t);
+            }
+          }
+
+          for (var i = 1; i < tweens.length; i++) {
+            tweens[i - 1].chain(tweens[i]);
+          }
+
+          tweens[0].start();
+        };
+
+        if (this.dialogueData[dialogeIndex].flirterStagger) {
+          shakeSprite.call(this, this.portraitB);
+        }
+        if (this.dialogueData[dialogeIndex].targetStagger) {
+          shakeSprite.call(this, this.portraitA);
+        }
+
         tickLettersLoop = this.game.time.events.loop(60, tickOneDialogueItem, this, function () {
           dialogeIndex++;
 
