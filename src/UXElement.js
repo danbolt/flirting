@@ -472,9 +472,6 @@ var DialogueUXElement = function(game, gameplayState) {
   this.portraitA = this.game.add.sprite(           -100, this.game.height - 140, 'portraits', 1);
   this.portraitB = this.game.add.sprite(this.game.width, this.game.height - 140, 'portraits', 2);
 
-  //this.textArea = this.game.add.sprite(54, this.game.height + 18, 'map_sprites', 5);
-  //this.textArea.width = this.game.width -120 + 16;
-  //this.textArea.height = 48 + 8;
   this.textArea = new NineSliceMenu(this.game, 54, this.game.height + 18, this.game.width - 120 + 16, 48 + 8);
   this.dialogueText = this.game.add.bitmapText(60, this.game.height, 'newsgeek', 'I love flowers in the springtime. What happens if we add more dialogue? We could keep going, but we only get 4 lines max. Keep going too. I want to see more and more. It\'d be easier if I was able to keep going as well. I want to keep typing.', 12);
   this.dialogueText.maxWidth = this.textArea.width - 8;
@@ -488,6 +485,14 @@ var DialogueUXElement = function(game, gameplayState) {
   this.backing.height = this.game.height;
   this.backing.alpha = 0;
 
+  this.hearts = this.game.add.group();
+  this.hearts.position.set(this.game.width / 2 - (24 * 7 * 0.75 * 0.5), -50);
+  for (var i = 0; i < 7; i++) {
+    var newHeart = this.game.add.sprite(i * 24, 0, 'extraUI_48x48', 18);
+    this.hearts.addChild(newHeart);
+  }
+  this.hearts.scale.set(0.75);
+
   this.elements.addChild(this.backing);
   this.elements.addChild(this.portraitA);
   this.elements.addChild(this.portraitB);
@@ -495,6 +500,7 @@ var DialogueUXElement = function(game, gameplayState) {
   this.elements.addChild(this.speakerNameB);
   this.elements.addChild(this.textArea);
   this.elements.addChild(this.dialogueText);
+  this.elements.addChild(this.hearts);
   this.elements.forEach(function (c) {
     c.visible = false;
   });
@@ -503,7 +509,7 @@ var DialogueUXElement = function(game, gameplayState) {
 };
 DialogueUXElement.prototype = Object.create(UXElement.prototype);
 
-DialogueUXElement.prototype.show = function(onHide) {
+DialogueUXElement.prototype.show = function(onHide, heartCount, heartDelta, reverse) {
   if (this.showing) { return; }
 
   UXElement.prototype.show.call(this, onHide);
@@ -541,6 +547,15 @@ DialogueUXElement.prototype.show = function(onHide) {
   var moveDialogueText = this.game.add.tween(this.dialogueText);
   moveDialogueText.to({ y: 122 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveDialogueText.start();
+  var moveHearts = this.game.add.tween(this.hearts);
+  moveHearts.to( {y: 32}, tweenTime, Phaser.Easing.Cubic.In);
+  moveHearts.start();
+
+  this.hearts.children.forEach(function (heart, index) {
+    heart.frame = index < (reverse ? 7 - heartCount : heartCount) ? 17 : 18;
+  }, this);
+  this.heartCount = heartCount;
+  this.heartDelta = heartDelta;
 
   moveDialogueText.onComplete.add(function () {
     this.game.time.events.add(300, function () {
@@ -611,11 +626,20 @@ DialogueUXElement.prototype.show = function(onHide) {
           tweens[0].start();
         };
 
+        var swoonSprite = function (portrait) {
+          var tween = this.game.add.tween(portrait.scale);
+          tween.to( { x: [1.1, 1], y: [1.1, 1] }, 1600, Phaser.Easing.Cubic.Out);
+          tween.start();
+        };
+
         if (this.dialogueData[dialogeIndex].flirterStagger) {
           shakeSprite.call(this, this.portraitB);
         }
         if (this.dialogueData[dialogeIndex].targetStagger) {
           shakeSprite.call(this, this.portraitA);
+        }
+        if (this.dialogueData[dialogeIndex].targetSwoon) {
+          swoonSprite.call(this, this.portraitA);
         }
 
         tickLettersLoop = this.game.time.events.loop(60, tickOneDialogueItem, this, function () {
@@ -624,7 +648,34 @@ DialogueUXElement.prototype.show = function(onHide) {
           if (dialogeIndex < this.dialogueData.length) {
             this.game.time.events.add(1450, playOneDialogueItem, this);
           } else {
-            this.game.time.events.add(2000, this.hide, this);
+            this.game.time.events.add(200, function () {
+
+              for (var i = 0; i < this.hearts.children.length; i++ ) {
+                var currentHeart = this.hearts.children[i];
+
+                if (i < (reverse ? (7 - this.heartCount + this.heartDelta) : (this.heartCount + this.heartDelta))) {
+                  currentHeart.frame = 17;
+
+                  if (i < (reverse ? (7 - this.heartCount + this.heartDelta) : (this.heartCount + this.heartDelta)) &&
+                      i >= (reverse ? (7 - this.heartCount) : (this.heartCount))) {
+                    var t = this.game.add.tween(currentHeart.scale);
+                    t.to( {x: [1.1, 1], y: [1.1, 1]}, 200, Phaser.Easing.Cubic.InOut);
+                    t.start();
+                  }
+                } else {
+                  currentHeart.frame = 18;
+
+                  if (i >= (reverse ? (7 - this.heartCount + this.heartDelta) : (this.heartCount + this.heartDelta)) &&
+                      i < (reverse ? (7 - this.heartCount) : (this.heartCount))) {
+                    var t = this.game.add.tween(currentHeart.scale);
+                    t.to( {x: [0.8, 1.1, 1], y: [0.8, 1.1, 1]}, 320, Phaser.Easing.Cubic.InOut);
+                    t.start();
+                  }
+                }
+              }
+
+              this.game.time.events.add(1800, this.hide, this);
+            }, this);
           }
         });
       };
@@ -659,6 +710,9 @@ DialogueUXElement.prototype.hide = function() {
   var moveTitleB = this.game.add.tween(this.speakerNameB);
   moveTitleB.to({ x: this.game.width + 50 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveTitleB.start();
+  var moveHearts = this.game.add.tween(this.hearts);
+  moveHearts.to( {y: -50}, tweenTime, Phaser.Easing.Cubic.Out);
+  moveHearts.start();
 
   this.dialogueData = null;
 

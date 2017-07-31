@@ -230,13 +230,15 @@ var Convos = {
               [
                 {
                   "speaker": "<TARGET>",
-                  "line": "Oh, well, I, um... *blush*"
+                  "line": "Oh, well, I, um... *blush*",
+                  "targetStagger": true
                 }
               ],
               [
                 {
                   "speaker": "<TARGET>",
-                  "line": "Heh, heh... where did you come from?"
+                  "line": "Heh, heh... where did you come from?",
+                  "targetStagger": true
                 }
               ],
            ],
@@ -247,14 +249,14 @@ var Convos = {
                 {
                   "speaker": "<TARGET>",
                   "line": "Hot damn...",
-                  "targetStagger": true
+                  "targetSwoon" : true
                 }
               ],
               [
                 {
                   "speaker": "<TARGET>",
                   "line": "Are you always this hunky?", //LOLOLOLOL I NEED SLEEP WHAT DID I WRITE
-                  "targetStagger": true 
+                  "targetSwoon" : true
                 }
               ],
            ],
