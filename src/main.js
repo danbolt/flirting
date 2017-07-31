@@ -44,7 +44,7 @@ Gameplay.prototype.create = function () {
   this.boardState.teams.push('red');
   this.boardState.teams.push('blue');
 
-  this.ai = new DumbMoveAI(1);
+  this.ai = new DumpAttackAI(1);
 
   mapLayer.layer.data.forEach(function (row, y) {
     this.boardState.terrain.push([]);

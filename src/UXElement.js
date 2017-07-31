@@ -552,7 +552,9 @@ DialogueUXElement.prototype.show = function(onHide, heartCount, heartDelta, reve
   moveHearts.start();
 
   this.hearts.children.forEach(function (heart, index) {
-    heart.frame = index < (reverse ? 7 - heartCount : heartCount) ? 17 : 18;
+    heart.frame = index < (7 - heartCount) ? 17 : 18;
+
+    if (!reverse) { heart.frame += 39; }
   }, this);
   this.heartCount = heartCount;
   this.heartDelta = heartDelta;
@@ -653,11 +655,11 @@ DialogueUXElement.prototype.show = function(onHide, heartCount, heartDelta, reve
               for (var i = 0; i < this.hearts.children.length; i++ ) {
                 var currentHeart = this.hearts.children[i];
 
-                if (i < (reverse ? (7 - this.heartCount + this.heartDelta) : (this.heartCount + this.heartDelta))) {
+                if (i < ( (7 - this.heartCount + this.heartDelta) )) {
                   currentHeart.frame = 17;
 
-                  if (i < (reverse ? (7 - this.heartCount + this.heartDelta) : (this.heartCount + this.heartDelta)) &&
-                      i >= (reverse ? (7 - this.heartCount) : (this.heartCount))) {
+                  if (i < ( (7 - this.heartCount + this.heartDelta)) &&
+                      i >= ( (7 - this.heartCount) )) {
                     var t = this.game.add.tween(currentHeart.scale);
                     t.to( {x: [1.1, 1], y: [1.1, 1]}, 200, Phaser.Easing.Cubic.InOut);
                     t.start();
@@ -665,13 +667,15 @@ DialogueUXElement.prototype.show = function(onHide, heartCount, heartDelta, reve
                 } else {
                   currentHeart.frame = 18;
 
-                  if (i >= (reverse ? (7 - this.heartCount + this.heartDelta) : (this.heartCount + this.heartDelta)) &&
-                      i < (reverse ? (7 - this.heartCount) : (this.heartCount))) {
+                  if (i >= ( (7 - this.heartCount + this.heartDelta) ) &&
+                      i < ( (7 - this.heartCount) )) {
                     var t = this.game.add.tween(currentHeart.scale);
                     t.to( {x: [0.8, 1.1, 1], y: [0.8, 1.1, 1]}, 320, Phaser.Easing.Cubic.InOut);
                     t.start();
                   }
                 }
+
+                if (!reverse) { currentHeart.frame += 39; }
               }
 
               this.game.time.events.add(1800, this.hide, this);
