@@ -49,7 +49,16 @@ var SelectCharacterUXElement = function (game, gameplayState) {
   this.cursorX = 2;
   this.cursorY = 2;
 
-  this.cursor = this.game.add.sprite(0, 0, 'map_sprites', 1);
+  this.cursor = this.game.add.sprite(0, 0, 'extraUI_48x48', 1);
+  this.cursor.animations.add('spin', [49, 27, 28, 29,  37, 38, 39, 47, 48 ], 14, true);
+  this.cursor.animations.play('spin');
+  this.cursor.tint = 0x552255;
+
+  var c2 = this.cursor.addChild(this.game.add.sprite(0, 0, 'extraUI_48x48', 1));
+  c2.animations.add('spin', [37, 38, 39, 47, 48, 49, 27, 28, 29], 14, true);
+  c2.animations.play('spin');
+  c2.tint = 0xCC33CC;
+
   this.refreshCursorPosition();
 };
 SelectCharacterUXElement.prototype = Object.create(UXElement.prototype);
@@ -83,12 +92,24 @@ SelectCharacterUXElement.prototype.onConfirm = function() {
 
   if (selectedPiece !== null && selectedPiece.team === this.gameplayState.boardState.currentTurnTeam() && this.gameplayState.boardState.movedThisTurn.indexOf(selectedPieceIndex) === -1) {
     return true;
+
+    this.cursor.visible = false;
   } else {
     return false;
   }
 };
+SelectCharacterUXElement.prototype.show = function(onHide) {
+  UXElement.prototype.show.call(this, onHide);
+  
+  this.cursor.visible = true;
+};
+SelectCharacterUXElement.prototype.hide = function() {
+  UXElement.prototype.hide.call(this);
+
+  this.cursor.visible = false;
+};
 SelectCharacterUXElement.prototype.refreshCursorPosition = function () {
-  this.cursor.position.set(this.cursorX * this.gameplayState.tileSize, this.cursorY * this.gameplayState.tileSize);
+  this.cursor.position.set(this.cursorX * this.gameplayState.tileSize - 2, this.cursorY * this.gameplayState.tileSize - 3);
 };
 
 // UX logic for moving a character
@@ -99,8 +120,17 @@ var MoveCharacterUXElement = function (game, gameplayState) {
 
   this.cursorX = -1;
   this.cursorY = -1;
-  this.cursor = this.game.add.sprite(0, 0, 'map_sprites', 1);
-  this.cursor.tint = 0xFF0000;
+
+  this.cursor = this.game.add.sprite(0, 0, 'extraUI_48x48', 1);
+  this.cursor.animations.add('spin', [49, 27, 28, 29,  37, 38, 39, 47, 48 ], 14, true);
+  this.cursor.animations.play('spin');
+  this.cursor.tint = 0x222255;
+
+  var c2 = this.cursor.addChild(this.game.add.sprite(0, 0, 'extraUI_48x48', 1));
+  c2.animations.add('spin', [37, 38, 39, 47, 48, 49, 27, 28, 29], 14, true);
+  c2.animations.play('spin');
+  c2.tint = 0x3333CC;
+
   this.cursor.renderable = false;
 
   this.steps = [];
@@ -227,7 +257,7 @@ MoveCharacterUXElement.prototype.updateStepsStack = function () {
   }
 };
 MoveCharacterUXElement.prototype.refreshCursorPosition = function () {
-  this.cursor.position.set(this.cursorX * this.gameplayState.tileSize, this.cursorY * this.gameplayState.tileSize);
+  this.cursor.position.set(this.cursorX * this.gameplayState.tileSize - 2, this.cursorY * this.gameplayState.tileSize - 3);
 };
 
 var CheckFlirtUXElement = function (game, gameplayState) {
