@@ -520,6 +520,9 @@ Preload.prototype.preload = function () {
   this.game.load.spritesheet('portraits', 'asset/img/portraits.png', 100, 160);
   this.game.load.spritesheet('map_sprites', 'asset/img/map_sprites.png', 16, 16);
 
+  this.game.load.spritesheet('extraUI_320x180', 'asset/img/extraUI.png', 320, 180);
+  this.game.load.spritesheet('extraUI_48x48', 'asset/img/extraUI.png', 48, 48);
+
   this.game.load.tilemap('test_map_1', 'asset/map/test_map_1.json', undefined, Phaser.Tilemap.TILED_JSON);
 
   this.game.load.bitmapFont('newsgeek', 'asset/font/newsgeek.png', 'asset/font/newsgeek.json');

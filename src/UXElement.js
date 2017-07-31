@@ -291,9 +291,35 @@ CheckFlirtUXElement.prototype.updateSelectedView = function() {
 var SelectFlirtStyleUXElement = function (game, gameplayState) {
   UXElement.call(this, game);
 
-  this.styleText = this.game.add.bitmapText(2, 2, 'newsgeek', '', 12);
-  this.styleText.visible = false;
-  this.styleText.fixedToCamera = true;
+  this.styleText = this.game.add.bitmapText(0, 0, 'newsgeek', '', 16);
+
+  this.arrowsOverlay = this.game.add.sprite(0, 0, 'extraUI_320x180', 0);
+  this.arrowsOverlay.visible = false;
+  this.arrowsOverlay.scale.set(0.001);
+  this.arrowsOverlay.fixedToCamera = true;
+  this.arrowsOverlay.anchor.set(0.5);
+  this.arrowsOverlay.cameraOffset.set(this.game.width / 2, this.game.height / 2 + 10);
+  var decorator = this.arrowsOverlay.addChild(this.game.add.sprite(this.game.width / -2, this.game.height / -2 - 8, 'extraUI_320x180', 1));
+  this.game.add.tween(decorator).to({y: [decorator.y + 3, decorator.y, decorator.y - 3, decorator.y]}, 3000, Phaser.Easing.Sinusoidal.InOut, true, 0, -1).interpolation(Phaser.Math.catmullRomInterpolation);
+  
+  this.arrowsOverlay.addChild(this.styleText);
+  this.styleText.anchor.set(0.5);
+  this.styleText.position.set(0, 0);
+  this.styleText.align = 'center';
+
+  this.sweetIcon = this.game.add.sprite(0, 0, 'extraUI_48x48', 7);
+  this.sweetIcon.anchor.set(0.5);
+  this.arrowsOverlay.addChild(this.sweetIcon);
+
+  this.boldIcon = this.game.add.sprite(0, 0, 'extraUI_48x48', 8);
+  this.boldIcon.anchor.set(0.5);
+  this.arrowsOverlay.addChild(this.boldIcon);
+
+  this.brashIcon = this.game.add.sprite(0, 0, 'extraUI_48x48', 9);
+  this.brashIcon.anchor.set(0.5);
+  this.arrowsOverlay.addChild(this.brashIcon);
+
+  this.icons = [this.sweetIcon, this.boldIcon, this.brashIcon];
 
   this.targetIndex = -1;
   this.attackingPiece = -1;
@@ -304,19 +330,35 @@ SelectFlirtStyleUXElement.prototype = Object.create(UXElement.prototype);
 SelectFlirtStyleUXElement.prototype.show = function(onHide) {
   UXElement.prototype.show.call(this, onHide);
 
+  this.sweetIcon.x = 0;
+  this.sweetIcon.y = -60;
+  this.boldIcon.x = 58;
+  this.boldIcon.y = 42;
+  this.brashIcon.x = -70;
+  this.brashIcon.y = 40;
+
   this.styleIndex = 0;
-  this.updateSelectedView()
+  this.updateSelectedView();
+
+  this.icons[0].scale.set(1.1);
+  this.icons[1].scale.set(1);
+  this.icons[2].scale.set(1);
 
   if (this.attackingPiece === -1) {
     throw 'Daniel, we should have an attackingPiece at this state';
   }
 
   this.styleText.visible = true;
+  this.arrowsOverlay.visible = true;
+  this.game.add.tween(this.arrowsOverlay.scale).to( {x : 1, y: 1}, 400, Phaser.Easing.Cubic.In).start();
 };
 SelectFlirtStyleUXElement.prototype.hide = function() {
   UXElement.prototype.hide.call(this);
 
   this.styleText.visible = false;
+  var t = this.game.add.tween(this.arrowsOverlay.scale).to( {x : 0.001, y: 0.001}, 300, Phaser.Easing.Cubic.Out);
+  t.onComplete.add(function () { this.arrowsOverlay.visible = false; }, this);
+  t.start();
 };
 SelectFlirtStyleUXElement.prototype.onConfirm = function() {
   var command = new GameLogic.AttackCommand();
@@ -334,16 +376,39 @@ SelectFlirtStyleUXElement.prototype.onConfirm = function() {
 
   return true;
 };
-SelectFlirtStyleUXElement.prototype.onDown = function() {
-  this.styleIndex = (this.styleIndex + 1) % 3;
-  this.updateSelectedView();
-};
-SelectFlirtStyleUXElement.prototype.onUp = function() {
+SelectFlirtStyleUXElement.prototype.onRight = function() {
   this.styleIndex = (this.styleIndex + 2) % 3;
   this.updateSelectedView();
+
+  for (var i = 0; i < this.icons.length; i++) {
+    var t = this.game.add.tween(this.icons[i]);
+    t.to( { x: this.icons[(i + 1) % this.icons.length].x, y: this.icons[(i + 1) % this.icons.length].y }, 300, Phaser.Easing.Cubic.InOut );
+    t.start();
+  }
+};
+SelectFlirtStyleUXElement.prototype.onLeft = function() {
+  this.styleIndex = (this.styleIndex + 1) % 3;
+  this.updateSelectedView();
+
+  for (var i = 0; i < this.icons.length; i++) {
+    var t = this.game.add.tween(this.icons[i]);
+    t.to( { x: this.icons[(i - 1 + this.icons.length) % this.icons.length].x, y: this.icons[(i - 1 + this.icons.length) % this.icons.length].y }, 300, Phaser.Easing.Cubic.InOut );
+    t.start();
+  }
 };
 SelectFlirtStyleUXElement.prototype.updateSelectedView = function() {
-  this.styleText.text = 'Have ' + this.gameplayState.boardState.pieces[this.attackingPiece].name + ' use ' + GameLogic.Style.getStringName(this.styleIndex) + ' style on ' + this.gameplayState.boardState.pieces[this.targetIndex].name + '?';
+  this.styleText.text = GameLogic.Style.getStringName(this.styleIndex);
+
+  for (var i = 0; i < this.icons.length; i++) {
+    var t = this.game.add.tween(this.icons[i].scale);
+
+    if (i === this.styleIndex) {
+      t.to( { x: 1.1, y: 1.1 }, 400, Phaser.Easing.Cubic.In );
+    } else {
+      t.to( { x: 1, y: 1 }, 300, Phaser.Easing.Cubic.Out );
+    }
+    t.start();
+  }
 };
 
 var DialogueUXElement = function(game, gameplayState) {
