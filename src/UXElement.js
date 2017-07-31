@@ -270,6 +270,16 @@ var CheckFlirtUXElement = function (game, gameplayState) {
   this.flirtOptions = [];
   this.flirtIndex = -1;
 
+  this.cursor = this.game.add.sprite(0, 0, 'extraUI_48x48', 1);
+  this.cursor.animations.add('spin', [49, 27, 28, 29,  37, 38, 39, 47, 48 ], 14, true);
+  this.cursor.animations.play('spin');
+  this.cursor.tint = 0x552221;
+
+  var c2 = this.cursor.addChild(this.game.add.sprite(0, 0, 'extraUI_48x48', 1));
+  c2.animations.add('spin', [37, 38, 39, 47, 48, 49, 27, 28, 29], 14, true);
+  c2.animations.play('spin');
+  c2.tint = 0xCC3333;
+  this.cursor.visible = false;
 
   this.moveIndicateText = this.game.add.bitmapText(2, 2, 'newsgeek', '', 12);
   this.moveIndicateText.visible = false;
@@ -286,6 +296,7 @@ CheckFlirtUXElement.prototype.show = function(onHide) {
 
   this.flirtIndex = 0;
   this.updateSelectedView();
+  this.cursor.visible = true;
 
   this.moveIndicateText.visible = true;
 };
@@ -293,6 +304,7 @@ CheckFlirtUXElement.prototype.hide = function() {
   UXElement.prototype.hide.call(this);
 
   this.moveIndicateText.visible = false;
+  this.cursor.visible = false;
 };
 CheckFlirtUXElement.prototype.onConfirm = function () {
   if (this.confirm instanceof SelectFlirtStyleUXElement) {
@@ -314,8 +326,19 @@ CheckFlirtUXElement.prototype.onUp = function() {
   this.flirtIndex = (this.flirtIndex - 1 + this.flirtOptions.length) % this.flirtOptions.length;
   this.updateSelectedView();
 };
+CheckFlirtUXElement.prototype.onRight = function() {
+  this.flirtIndex = (this.flirtIndex + 1) % this.flirtOptions.length;
+  this.updateSelectedView();
+};
+CheckFlirtUXElement.prototype.onLeft = function() {
+  this.flirtIndex = (this.flirtIndex - 1 + this.flirtOptions.length) % this.flirtOptions.length;
+  this.updateSelectedView();
+};
 CheckFlirtUXElement.prototype.updateSelectedView = function() {
   this.moveIndicateText.text = 'Have ' + this.gameplayState.boardState.pieces[this.attackingPiece].name + ' flirt with ' + this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].name + '?';
+
+  this.cursor.x = this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].position.x * 16 - 2;
+  this.cursor.y = this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].position.y * 16 - 3;
 };
 
 var SelectFlirtStyleUXElement = function (game, gameplayState) {
