@@ -326,7 +326,8 @@ var Convos = {
               ]
   },
   "Failure": {
-    //
+    "Generic": [
+               ]
   },
   "Dissing": {
     "Generic": [
@@ -355,19 +356,22 @@ var Convos = {
                   [
                     {
                       speaker: "<FLIRTER>",
-                      "line": "Ugh..."
+                      "line": "Ugh...",
+                      "flirterStagger": true
                     },
                   ],
                   [
                     {
                       speaker: "<FLIRTER>",
-                      "line": "This is discouraging..."
+                      "line": "This is discouraging...",
+                      "flirterStagger": true
                     },
                   ],
                   [
                     {
                       speaker: "<FLIRTER>",
-                      "line": "Oh..."
+                      "line": "Oh...",
+                      "flirterStagger": true
                     },
                   ],
                ]

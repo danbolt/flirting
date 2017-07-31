@@ -385,6 +385,7 @@ Gameplay.prototype.processCommand = function (command) {
           }
         } else if (this.boardState.pieces[result.attacker].team === 1) {
           this.dialogueUX.dialogueData = Convos.Dissing.Generic[~~(Convos.Dissing.Generic.length * Math.random())];
+          this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.DissResponse.Generic[~~(Math.random() * Convos.DissResponse.Generic.length)]);
           this.dialogueUX.portraitA.frame = PortraitMap[this.boardState.pieces[result.attacker].name];
           this.dialogueUX.portraitB.frame = PortraitMap[this.boardState.pieces[result.target].name];
           this.dialogueUX.speakerNameA.text = this.boardState.pieces[result.attacker].name;
