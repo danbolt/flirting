@@ -36,3 +36,20 @@ DumbMoveAI.prototype.getCommandForBoardState = function(boardState) {
   return new GameLogic.EndTurnCommand();
 };
 
+DumpAttackAI = function (teamIndex) {
+  GameAI.call(this, teamIndex);
+};
+DumpAttackAI.prototype.getCommandForBoardState = function(boardState) {
+
+  if (boardState.attackedThisTurn.indexOf(7) !== -1) {
+    return new GameLogic.EndTurnCommand();
+  }
+
+  var ac = new GameLogic.AttackCommand();
+  ac.attacker = 7;
+  ac.target = 5;
+  ac.style = -1;
+  return ac;
+};
+
+

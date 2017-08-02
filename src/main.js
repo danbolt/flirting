@@ -142,7 +142,7 @@ Gameplay.prototype.create = function () {
   testChar3.position.x = 3;
   testChar3.position.y = 5;
   testChar3.name = 'Joss';
-  testChar3.hp = 1;
+  testChar3.hp = 4;
   testChar3.team = 1;
   testChar3.style = GameLogic.Style.SWEET;
   testChar3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
@@ -329,6 +329,7 @@ Gameplay.prototype.processCommand = function (command) {
     var resultTweens = [];
 
     results.forEach(function (result) {
+      var prevBoardState = this.boardState;
       this.boardState = GameLogic.ApplyResult(this.boardState, result);
       
       if (result instanceof GameLogic.MoveResult) {
@@ -384,6 +385,7 @@ Gameplay.prototype.processCommand = function (command) {
           }
         } else if (this.boardState.pieces[result.attacker].team === 1) {
           this.dialogueUX.dialogueData = Convos.Dissing.Generic[~~(Convos.Dissing.Generic.length * Math.random())];
+          this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.DissResponse.Generic[~~(Math.random() * Convos.DissResponse.Generic.length)]);
           this.dialogueUX.portraitA.frame = PortraitMap[this.boardState.pieces[result.attacker].name];
           this.dialogueUX.portraitB.frame = PortraitMap[this.boardState.pieces[result.target].name];
           this.dialogueUX.speakerNameA.text = this.boardState.pieces[result.attacker].name;
@@ -396,7 +398,7 @@ Gameplay.prototype.processCommand = function (command) {
           this.dialogueUX.show(function () {
             gameplay.refreshPaneData();
             t2.start();
-          });
+          }, prevBoardState.pieces[result.target].hp, GameLogic.ComputeAttackDamage( result.style, this.boardState.pieces[result.target].style, this.boardState.pieces[result.attacker].romanceType, this.boardState.pieces[result.target].romanceType), this.boardState.pieces[result.attacker].team === 0);
         }, this);
       } else if (result instanceof GameLogic.KnockoutResult) {
         var characterToMove = null;
