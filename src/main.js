@@ -44,7 +44,7 @@ Gameplay.prototype.create = function () {
   this.boardState.teams.push('red');
   this.boardState.teams.push('blue');
 
-  this.ai = new DumbMoveAI(1);
+  this.ai = new YaoiJamAI(1);
 
   mapLayer.layer.data.forEach(function (row, y) {
     this.boardState.terrain.push([]);
@@ -88,26 +88,6 @@ Gameplay.prototype.create = function () {
   heroc.style = GameLogic.Style.NONE;
   this.boardState.pieces.push(heroc);
 
-  var herod = new GameLogic.BoardPiece();
-  herod.position.x = 5;
-  herod.position.y = 5;
-  herod.name = 'Sanders';
-  herod.hp = 5;
-  herod.team = 0;
-  herod.romanceType = GameLogic.RomanceType.RUGGED;
-  herod.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(herod);
-
-  var heroe = new GameLogic.BoardPiece();
-  heroe.position.x = 6;
-  heroe.position.y = 6;
-  heroe.name = 'Neil';
-  heroe.hp = 5;
-  heroe.team = 0;
-  heroe.romanceType = GameLogic.RomanceType.RUGGED;
-  heroe.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(heroe);
-
   var herof = new GameLogic.BoardPiece();
   herof.position.x = 2;
   herof.position.y = 3;
@@ -130,7 +110,7 @@ Gameplay.prototype.create = function () {
 
   var testChar2 = new GameLogic.BoardPiece();
   testChar2.position.x = 2;
-  testChar2.position.y = 4;
+  testChar2.position.y = 6;
   testChar2.name = 'Fish';
   testChar2.hp = 1;
   testChar2.team = 1;
@@ -139,8 +119,8 @@ Gameplay.prototype.create = function () {
   this.boardState.pieces.push(testChar2);
 
   var testChar3 = new GameLogic.BoardPiece();
-  testChar3.position.x = 3;
-  testChar3.position.y = 5;
+  testChar3.position.x = 4;
+  testChar3.position.y = 8;
   testChar3.name = 'Joss';
   testChar3.hp = 4;
   testChar3.team = 1;
