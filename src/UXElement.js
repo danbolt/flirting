@@ -292,6 +292,15 @@ var CheckFlirtUXElement = function (game, gameplayState) {
   this.character1TypeText.visible = false;
   this.character2TypeText.visible = false;
   this.character2TypeText.data.tween = this.game.add.tween(this.character2TypeText);
+  this.advantageIcon = this.character2TypeText.addChild(this.game.add.sprite(2, 0, 'extraUI_48x48', 80));
+  this.advantageIcon.scale.set(0.5);
+  this.advantageIcon.anchor.x = 0.5;
+  this.advantageIcon.x = 16;
+  this.advantageIcon.y = -24;
+  this.advantageIcon.animations.add('arrow', [80, 81, 82, 81], 10, true);
+  this.advantageIcon.animations.play('arrow');
+  this.advantageIcon.animations.add('equal', [83, 84, 85, 84], 10, true);
+  this.advantageIcon.animations.play('equal');
 };
 CheckFlirtUXElement.prototype = Object.create(UXElement.prototype);
 CheckFlirtUXElement.prototype.show = function(onHide) {
@@ -360,15 +369,23 @@ CheckFlirtUXElement.prototype.updateSelectedView = function() {
   this.character2TypeText.y = this.cursor.y + 20;
   this.character2TypeText.text = GameLogic.RomanceType.getStringName(this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].romanceType);
 
-  if (this.character2TypeText.left < this.game.camera.x) {
-    this.character2TypeText.x += (this.game.camera.x - this.character2TypeText.left);
-    this.character2TypeText.y += 16;
-  }
-
   this.character2TypeText.data.tween.stop();
   this.character2TypeText.data.tween = this.game.add.tween(this.character2TypeText);
   this.character2TypeText.data.tween.to( { y: this.character2TypeText.y - 5 }, 600, Phaser.Easing.Quadratic.In, false, 120, -1, true );
   this.character2TypeText.data.tween.start();
+
+  var damagePrediction = GameLogic.ComputeAttackDamage(-1, -1, this.gameplayState.boardState.pieces[this.attackingPiece].romanceType, this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].romanceType);
+  if (damagePrediction > 0) {
+    this.advantageIcon.tint = 0x22AA22;
+    this.advantageIcon.animations.play('arrow');
+    this.advantageIcon.scale.set(0.5, 0.5);
+    this.advantageIcon.y = -24;
+  } else {
+    this.advantageIcon.tint = 0xAA1122;
+    this.advantageIcon.animations.play('arrow');
+    this.advantageIcon.scale.set(0.5, -0.5);
+    this.advantageIcon.y = -16;
+  }
 };
 
 var SelectFlirtStyleUXElement = function (game, gameplayState) {
