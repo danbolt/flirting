@@ -215,8 +215,8 @@ YaoiJamAI.prototype.getCommandForBoardState = function(boardState) {
       if (best === null) {
         return t;
       } else {
-        var bestDamage = GameLogic.ComputeAttackDamage(-1, -1, boardState.pieces[ac.attacker].romanceType, boardState[best].romanceType);
-        var tDamage = GameLogic.ComputeAttackDamage(-1, -1, boardState.pieces[ac.attacker].romanceType, boardState[t].romanceType);
+        var bestDamage = GameLogic.ComputeAttackDamage(-1, -1, boardState.pieces[ac.attacker].romanceType, boardState.pieces[best].romanceType);
+        var tDamage = GameLogic.ComputeAttackDamage(-1, -1, boardState.pieces[ac.attacker].romanceType, boardState.pieces[t].romanceType);
 
         if (bestDamage >= tDamage) {
           return best;
