@@ -163,11 +163,20 @@ Gameplay.prototype.create = function () {
   backing.height = this.game.height;
   this.dataPane.addChild(backing);
   this.dataPane.addChild(new NineSliceMenu(this.game, 0, 0, backing.width, backing.height));
-  this.portrait = this.game.add.sprite(12, this.game.height - 160 + 24, 'portraits', 0);
-  this.dataPane.addChild(this.portrait);
-  this.selectedCharacterText = this.game.add.bitmapText(0, 0, 'newsgeek', '', 12);
+  this.selectedCharacterText = this.game.add.bitmapText(0, 0, 'newsgeek', '', 16);
   this.selectedCharacterText.smoothed = false;
   this.dataPane.addChild(this.selectedCharacterText);
+  this.selectedCharacterLife = this.game.add.group();
+  this.dataPane.addChild(this.selectedCharacterLife);
+  this.portrait = this.game.add.sprite(12, this.game.height - 160 + 24, 'portraits', 0);
+  this.dataPane.addChild(this.portrait);
+  this.selectedCharacterLife.position.set(4, 40);
+  for (var i = 0; i < 7; i++) {
+    var newHeart = this.game.add.sprite(i * 24 * 0.6, 0, 'extraUI_48x48', 18);
+    newHeart.scale.set(0.6);
+    this.selectedCharacterLife.addChild(newHeart);
+  }
+  this.selectedCharacterLife.visible = false;
   this.selectedCharacterText.position.set(8, 8);
   this.turnInfoText = this.game.add.bitmapText(4, this.game.height - 16 - 4, 'newsgeek', 'TURN', 16);
   this.turnInfoText.tint = 0xEE1112;
@@ -294,10 +303,17 @@ Gameplay.prototype.refreshPaneData = function () {
     var selectedPiece = selectedPieces[0];
     this.portrait.frame = PortraitMap[selectedPiece.name];
 
-    this.selectedCharacterText.text = selectedPiece.name + '\n love: ' + selectedPiece.hp + '\n' + GameLogic.RomanceType.getStringName(selectedPiece.romanceType);
+    this.selectedCharacterText.text = selectedPiece.name + '\n' + GameLogic.RomanceType.getStringName(selectedPiece.romanceType);
+    this.selectedCharacterLife.visible = true;
+    for (var i = 0; i < this.selectedCharacterLife.children.length; i++) {
+      var h = this.selectedCharacterLife.children[i];
+
+      h.frame = 17 + (selectedPiece.team === 0 ? 39 : 0) + (i > (7 - selectedPiece.hp - 1) ? 1 : 0);
+    }
   } else {
     this.portrait.frame = 0;
     this.selectedCharacterText.text = '';
+    this.selectedCharacterLife.visible = false;
   }
 };
 Gameplay.prototype.processCommand = function (command) {

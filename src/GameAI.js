@@ -20,12 +20,12 @@ GameAI.prototype.enemyAlivePieceIndicies = function (boardState) {
 };
 GameAI.prototype.myAvailableToMovePieceIndicies = function (boardState) {
   return this.myAlivePieceIndicies(boardState).filter(function (ind) {
-    return boardState.movedThisTurn.indexOf(ind) === -1;
+    return boardState.movedThisTurn.indexOf(ind) === -1 && boardState.kos.indexOf(ind) === -1;
   }, this);
 };
 GameAI.prototype.myAvailableToAttackPieceIndicies = function (boardState) {
   return this.myAlivePieceIndicies(boardState).filter(function (ind) {
-    return boardState.attackedThisTurn.indexOf(ind) === -1 && boardState.movedThisTurn.indexOf(ind) !== -1;
+    return boardState.attackedThisTurn.indexOf(ind) === -1 && boardState.movedThisTurn.indexOf(ind) !== -1 && boardState.kos.indexOf(ind) === -1;
   }, this);
 };
 GameAI.prototype.getAvailablePaths = function (boardState, pieceToMove) {
