@@ -239,7 +239,38 @@ YaoiJamAI.prototype.getCommandForBoardState = function(boardState) {
 
     var stepMapKeys = Object.keys(stepMap);
     if (stepMapKeys.length > 0 ) {
-      mc.steps = stepMap[stepMapKeys[~~(stepMapKeys.length * Math.random())]];
+      var computeBestDamage = function (steps) {
+        // find the target index that gives the most damage
+        steps.targets.reduce(function (a, i) {
+          if (GameLogic.ComputeAttackDamage(-1, -1, boardState.pieces[mc.piece].romanceType, boardState.pieces[i].romanceType) > GameLogic.ComputeAttackDamage(-1, -1, boardState.pieces[mc.piece].romanceType, boardState.pieces[a].romanceType)) {
+            return i;
+          } else {
+            return a;
+          }
+        });
+      };
+
+      var best = null;
+
+      stepMapKeys.forEach(function (key) {
+        var steps = stepMap[key];
+
+        if (best === null) {
+          best = steps;
+          return;
+        }
+
+        if (computeBestDamage(steps) > computeBestDamage(best)) {
+          best = steps;
+        }
+
+      }, this);
+      console.log('reduced');
+      console.log(stepMap);
+      console.log('to');
+      console.log(best);
+
+      mc.steps = best;
     }
 
     return mc;
