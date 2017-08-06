@@ -241,7 +241,7 @@ YaoiJamAI.prototype.getCommandForBoardState = function(boardState) {
     if (stepMapKeys.length > 0 ) {
       var computeBestDamage = function (steps) {
         // find the target index that gives the most damage
-        steps.targets.reduce(function (a, i) {
+        return steps.targets.reduce(function (a, i) {
           if (GameLogic.ComputeAttackDamage(-1, -1, boardState.pieces[mc.piece].romanceType, boardState.pieces[i].romanceType) > GameLogic.ComputeAttackDamage(-1, -1, boardState.pieces[mc.piece].romanceType, boardState.pieces[a].romanceType)) {
             return i;
           } else {
@@ -265,10 +265,6 @@ YaoiJamAI.prototype.getCommandForBoardState = function(boardState) {
         }
 
       }, this);
-      console.log('reduced');
-      console.log(stepMap);
-      console.log('to');
-      console.log(best);
 
       mc.steps = best;
     }
