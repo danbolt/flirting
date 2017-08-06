@@ -2,7 +2,7 @@ var GameAI = function (teamIndex) {
   this.teamIndex = teamIndex;
 };
 GameAI.prototype.getCommandForBoardState = function(boardState) {
-  throw "Daniel, don't use the default GameAI."
+  throw "Daniel, don't use the default GameAI. 😠"
 };
 GameAI.prototype.myAlivePieceIndicies = function (boardState) {
   return boardState.pieces.map(function (piece, index) {
@@ -21,6 +21,11 @@ GameAI.prototype.enemyAlivePieceIndicies = function (boardState) {
 GameAI.prototype.myAvailableToMovePieceIndicies = function (boardState) {
   return this.myAlivePieceIndicies(boardState).filter(function (ind) {
     return boardState.movedThisTurn.indexOf(ind) === -1;
+  }, this);
+};
+GameAI.prototype.myAvailableToAttackPieceIndicies = function (boardState) {
+  return this.myAlivePieceIndicies(boardState).filter(function (ind) {
+    return boardState.attackedThisTurn.indexOf(ind) === -1 && boardState.movedThisTurn.indexOf(ind) !== -1;
   }, this);
 };
 GameAI.prototype.getAvailablePaths = function (boardState, pieceToMove) {
@@ -68,6 +73,44 @@ GameAI.prototype.getAvailablePaths = function (boardState, pieceToMove) {
 
   bfs(boardState.pieces[pieceToMove].position.x, boardState.pieces[pieceToMove].position.y, null, null, [], 5);
   return stepMap;
+};
+GameAI.prototype.addAttackOppurtunities = function (boardState, stepMap) {
+  var result = JSON.parse(JSON.stringify(stepMap));
+
+  var keys = Object.keys(result);
+  keys.forEach(function (key, index) {
+    var steps = result[key];
+    steps.targets = [];
+    var xPos = steps[steps.length - 1].x;
+    var yPos = steps[steps.length - 1].y;
+
+    if (boardState.getPieceForPosition(xPos + 1, yPos) && boardState.getPieceForPosition(xPos + 1, yPos).team !== this.teamIndex) {
+      steps.targets.push(boardState.pieces.indexOf(boardState.getPieceForPosition(xPos + 1, yPos)));
+    }
+    if (boardState.getPieceForPosition(xPos - 1, yPos) && boardState.getPieceForPosition(xPos - 1, yPos).team !== this.teamIndex) {
+      steps.targets.push(boardState.pieces.indexOf(boardState.getPieceForPosition(xPos - 1, yPos)));
+    }
+    if (boardState.getPieceForPosition(xPos, yPos + 1) && boardState.getPieceForPosition(xPos, yPos + 1).team !== this.teamIndex) {
+      steps.targets.push(boardState.pieces.indexOf(boardState.getPieceForPosition(xPos, yPos + 1)));
+    }
+    if (boardState.getPieceForPosition(xPos, yPos - 1) && boardState.getPieceForPosition(xPos, yPos - 1).team !== this.teamIndex) {
+      steps.targets.push(boardState.pieces.indexOf(boardState.getPieceForPosition(xPos, yPos - 1)));
+    }
+  }, this);
+
+  return result;
+};
+GameAI.prototype.removeNonAttackMoves = function (boardState, stepMap) {
+  var result = {};
+
+  var keys = Object.keys(stepMap);
+  keys.forEach(function (key, index) {
+    if (stepMap[key].targets.length > 0) {
+      result[key] = stepMap[key];
+    }
+  }, this);
+
+  return result;
 };
 
 DeadSimpleAI = function (teamIndex) {
@@ -126,23 +169,82 @@ YaoiJamAI.prototype.getCommandForBoardState = function(boardState) {
   // Get the pieces we have that are available to move.
   var piecesToMove = this.myAvailableToMovePieceIndicies(boardState);
 
-  // If there are none we can move atm, end the turn.
-  if (piecesToMove.length === 0) {
+  // Get the pieces we have that are available to attack.
+  var piecesToAttackWith = this.myAvailableToAttackPieceIndicies(boardState);
+  piecesToAttackWith = piecesToAttackWith.filter(function (index) {
+    var xPos = boardState.pieces[index].position.x;
+    var yPos = boardState.pieces[index].position.y;
+
+    if (boardState.getPieceForPosition(xPos + 1, yPos) && boardState.getPieceForPosition(xPos + 1, yPos).team !== this.teamIndex) {
+      return true;
+    }
+    if (boardState.getPieceForPosition(xPos - 1, yPos) && boardState.getPieceForPosition(xPos - 1, yPos).team !== this.teamIndex) {
+      return true;
+    }
+    if (boardState.getPieceForPosition(xPos, yPos + 1) && boardState.getPieceForPosition(xPos, yPos + 1).team !== this.teamIndex) {
+      return true;
+    }
+    if (boardState.getPieceForPosition(xPos, yPos - 1) && boardState.getPieceForPosition(xPos, yPos - 1).team !== this.teamIndex) {
+      return true;
+    }
+  }, this);
+
+  if (piecesToAttackWith.length > 0) {
+    var ac = new GameLogic.AttackCommand();
+    ac.attacker = piecesToAttackWith[0];
+    ac.syle = -1;
+
+    var targets = []
+    var xPos = boardState.pieces[ac.attacker].position.x;
+    var yPos = boardState.pieces[ac.attacker].position.y;
+
+    if (boardState.getPieceForPosition(xPos + 1, yPos) && boardState.getPieceForPosition(xPos + 1, yPos).team !== this.teamIndex) {
+      targets.push(boardState.pieces.indexOf(boardState.getPieceForPosition(xPos + 1, yPos)));
+    }
+    if (boardState.getPieceForPosition(xPos - 1, yPos) && boardState.getPieceForPosition(xPos - 1, yPos).team !== this.teamIndex) {
+      targets.push(boardState.pieces.indexOf(boardState.getPieceForPosition(xPos - 1, yPos)));
+    }
+    if (boardState.getPieceForPosition(xPos, yPos + 1) && boardState.getPieceForPosition(xPos, yPos + 1).team !== this.teamIndex) {
+      targets.push(boardState.pieces.indexOf(boardState.getPieceForPosition(xPos, yPos + 1)));
+    }
+    if (boardState.getPieceForPosition(xPos, yPos - 1) && boardState.getPieceForPosition(xPos, yPos - 1).team !== this.teamIndex) {
+      targets.push(boardState.pieces.indexOf(boardState.getPieceForPosition(xPos, yPos - 1)));
+    }
+
+    var bestTargetIndex = targets.reduce(function(best, t) {
+      if (best === null) {
+        return t;
+      } else {
+        var bestDamage = GameLogic.ComputeAttackDamage(-1, -1, boardState.pieces[ac.attacker].romanceType, boardState[best].romanceType);
+        var tDamage = GameLogic.ComputeAttackDamage(-1, -1, boardState.pieces[ac.attacker].romanceType, boardState[t].romanceType);
+
+        if (bestDamage >= tDamage) {
+          return best;
+        } else {
+          return t;
+        }
+      }
+    }, null);
+
+    ac.target = bestTargetIndex;
+    return ac;
+
+  } else if (piecesToMove.length > 0) {
+    var mc = new GameLogic.MoveCommand();
+    mc.piece = piecesToMove[0];
+
+    var stepMap = this.getAvailablePaths(boardState, piecesToMove[0]);
+    stepMap = this.addAttackOppurtunities(boardState, stepMap);
+    stepMap = this.removeNonAttackMoves(boardState, stepMap);
+
+    var stepMapKeys = Object.keys(stepMap);
+    if (stepMapKeys.length > 0 ) {
+      mc.steps = stepMap[stepMapKeys[~~(stepMapKeys.length * Math.random())]];
+    }
+
+    return mc;
+  } else {
     return new GameLogic.EndTurnCommand();
   }
-
-  var stepMap = this.getAvailablePaths(boardState, piecesToMove[0]);
-  var stepMapKeys = Object.keys(stepMap);
-
-  var mc = new GameLogic.MoveCommand();
-  mc.piece = piecesToMove[0];
-  mc.steps = stepMap[stepMapKeys[~~(stepMapKeys.length * Math.random())]];
-
-  // if we can't move forward one step, then don't worry about it
-  if (GameLogic.ApplyCommand(boardState, mc).length === 0) {
-    mc.steps = [];
-  }
-
-  return mc;
 };
 
