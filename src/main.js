@@ -119,8 +119,8 @@ Gameplay.prototype.create = function () {
   this.boardState.pieces.push(testChar2);
 
   var testChar3 = new GameLogic.BoardPiece();
-  testChar3.position.x = 4;
-  testChar3.position.y = 8;
+  testChar3.position.x = 3;
+  testChar3.position.y = 7;
   testChar3.name = 'Joss';
   testChar3.hp = 4;
   testChar3.team = 1;

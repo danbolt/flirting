@@ -284,6 +284,14 @@ var CheckFlirtUXElement = function (game, gameplayState) {
   this.moveIndicateText = this.game.add.bitmapText(2, 2, 'newsgeek', '', 12);
   this.moveIndicateText.visible = false;
   this.moveIndicateText.fixedToCamera = true;
+
+  this.character1TypeText = this.game.add.bitmapText(2, 32, 'newsgeek', 'TEAM1', 14);
+  this.character2TypeText = this.game.add.bitmapText(2, 64, 'newsgeek', 'TEAM2', 14);
+  this.character2TypeText.align = 'center';
+  this.character2TypeText.anchor.x = 0.5;
+  this.character1TypeText.visible = false;
+  this.character2TypeText.visible = false;
+  this.character2TypeText.data.tween = this.game.add.tween(this.character2TypeText);
 };
 CheckFlirtUXElement.prototype = Object.create(UXElement.prototype);
 CheckFlirtUXElement.prototype.show = function(onHide) {
@@ -297,6 +305,8 @@ CheckFlirtUXElement.prototype.show = function(onHide) {
   this.flirtIndex = 0;
   this.updateSelectedView();
   this.cursor.visible = true;
+  //this.character1TypeText.visible = true;
+  this.character2TypeText.visible = true;
 
   this.moveIndicateText.visible = true;
 };
@@ -305,6 +315,8 @@ CheckFlirtUXElement.prototype.hide = function() {
 
   this.moveIndicateText.visible = false;
   this.cursor.visible = false;
+  this.character1TypeText.visible = false;
+  this.character2TypeText.visible = false;
 };
 CheckFlirtUXElement.prototype.onConfirm = function () {
   if (this.confirm instanceof SelectFlirtStyleUXElement) {
@@ -339,6 +351,24 @@ CheckFlirtUXElement.prototype.updateSelectedView = function() {
 
   this.cursor.x = this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].position.x * 16 - 2;
   this.cursor.y = this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].position.y * 16 - 3;
+
+  this.character1TypeText.x = this.gameplayState.cursorUX.cursor.x + 18;
+  this.character1TypeText.y = this.gameplayState.cursorUX.cursor.y - 14;
+  this.character1TypeText.text = this.gameplayState.boardState.pieces[this.attackingPiece].romanceType;
+
+  this.character2TypeText.x = this.cursor.x + 8;
+  this.character2TypeText.y = this.cursor.y + 20;
+  this.character2TypeText.text = GameLogic.RomanceType.getStringName(this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].romanceType);
+
+  if (this.character2TypeText.left < this.game.camera.x) {
+    this.character2TypeText.x += (this.game.camera.x - this.character2TypeText.left);
+    this.character2TypeText.y += 16;
+  }
+
+  this.character2TypeText.data.tween.stop();
+  this.character2TypeText.data.tween = this.game.add.tween(this.character2TypeText);
+  this.character2TypeText.data.tween.to( { y: this.character2TypeText.y - 5 }, 600, Phaser.Easing.Quadratic.In, false, 120, -1, true );
+  this.character2TypeText.data.tween.start();
 };
 
 var SelectFlirtStyleUXElement = function (game, gameplayState) {
