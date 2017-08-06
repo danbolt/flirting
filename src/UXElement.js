@@ -775,7 +775,7 @@ var TurnStartUXElement = function(game, gameplayState) {
 
   this.gameplayState = gameplayState;
 
-  this.slideText = this.game.add.bitmapText(this.game.width / 2, this.game.height / 2, 'newsgeek', 'TURN', 16);
+  this.slideText = this.game.add.bitmapText(this.game.width / 2, this.game.height / 2, 'newsgeek', 'TURN', 20);
   this.slideText.visible = false;
   this.slideText.anchor.set(0.5, 0.5);
   this.slideText.align = 'center';
@@ -792,9 +792,9 @@ TurnStartUXElement.prototype.show = function(onHide) {
   this.slideText.cameraOffset.x = -50;
 
   if (this.gameplayState.boardState.currentTurnTeam() === 0) {
-    this.slideText.text = 'Player Turn';
+    this.slideText.text = 'Flirt Round!';
   } else {
-    this.slideText.text = 'Crush Turn';
+    this.slideText.text = 'Rebuff Round!';
   }
 
   var slideTextTweenA = this.game.add.tween(this.slideText.cameraOffset);
