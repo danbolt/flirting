@@ -134,6 +134,7 @@ Gameplay.prototype.create = function () {
   this.styleUX = new SelectFlirtStyleUXElement(this.game, this);
   stitch(this.flirtUX, this.styleUX);
   stitch(this.styleUX, this.cursorUX);
+  this.cursorUX.back = null;
 
   this.dialogueUX = new DialogueUXElement(this.game, this);
 
