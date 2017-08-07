@@ -3,7 +3,7 @@
 var PortraitMap = {};
 PortraitMap['Bapi'] = 1;
 PortraitMap['Chet'] = 2;
-PortraitMap['Fish'] = 3;
+PortraitMap['Locke'] = 3;
 PortraitMap['Yang'] = 4;
 PortraitMap['Joss'] = 5;
 PortraitMap['Sanders'] = 6;
@@ -318,6 +318,10 @@ Gameplay.prototype.processCommand = function (command) {
           this.dialogueUX.portraitB.frame = PortraitMap[this.boardState.pieces[result.target].name];
           this.dialogueUX.speakerNameA.text = this.boardState.pieces[result.attacker].name;
           this.dialogueUX.speakerNameB.text = this.boardState.pieces[result.target].name;
+
+          if (this.boardState.pieces[result.target].hp <= 0) {
+            this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.Failure.Generic[~~(Convos.Failure.Generic.length * Math.random())]);
+          }
         }
 
         t1.doNotChain = true;
@@ -334,7 +338,7 @@ Gameplay.prototype.processCommand = function (command) {
 
         var playerTeam = this.boardState.pieces[characterToMove.data.index].team === 0;
         var t = this.game.add.tween(characterToMove);
-        t.to( { x: this.game.camera.x + (playerTeam ? 150 : -150) }, 1400, undefined, false, 500);
+        t.to( { x: this.game.camera.x + (playerTeam ? 300 : -150) }, 1400, undefined, false, 500);
         resultTweens.push(t);
 
       } else if (result instanceof GameLogic.EndTurnResult) {

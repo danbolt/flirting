@@ -327,6 +327,12 @@ var Convos = {
   },
   "Failure": {
     "Generic": [
+                  [
+                    {
+                      speaker: "<FLIRTER>",
+                      "line": "Man, I feel awful! I'm out of here...",
+                    },
+                  ],
                ]
   },
   "Dissing": {
