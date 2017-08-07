@@ -46,6 +46,13 @@ var SelectCharacterUXElement = function (game, gameplayState) {
 
   this.gameplayState = gameplayState;
 
+  this.pathMarkers = this.game.add.group();
+  for (var i = 0; i < 50; i++) {
+    var marker = this.game.add.sprite(0, 0, 'map_sprites', 14);
+    this.pathMarkers.addChild(marker);
+    marker.kill();
+  }
+
   this.cursorX = 5;
   this.cursorY = 5;
 
@@ -110,6 +117,27 @@ SelectCharacterUXElement.prototype.hide = function() {
 };
 SelectCharacterUXElement.prototype.refreshCursorPosition = function () {
   this.cursor.position.set(this.cursorX * this.gameplayState.tileSize - 2, this.cursorY * this.gameplayState.tileSize - 3);
+
+  this.pathMarkers.killAll();
+  var selectedPiece = this.gameplayState.boardState.getPieceForPosition(this.cursorX, this.cursorY);
+  if (selectedPiece) {
+    var selectedPieceIndex = this.gameplayState.boardState.pieces.indexOf(selectedPiece);
+
+    if (this.gameplayState.boardState.movedThisTurn.indexOf(selectedPieceIndex) === -1) {
+      var stepMap = this.gameplayState.ai.getAvailablePaths(this.gameplayState.boardState, selectedPieceIndex);
+      var stepMapKeys = Object.keys(stepMap);
+      for (var i = 0; i < stepMapKeys.length; i++) {
+        var steps = stepMap[stepMapKeys[i]];
+        var destination = steps[steps.length - 1];
+
+        var marker = this.pathMarkers.getFirstDead();
+        marker.x = destination.x * this.gameplayState.tileSize;
+        marker.y = destination.y * this.gameplayState.tileSize;
+        marker.frame = 14 + selectedPiece.team;
+        marker.revive();
+      }
+    }
+  }
 };
 
 // UX logic for moving a character
