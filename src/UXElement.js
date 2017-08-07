@@ -146,6 +146,13 @@ var MoveCharacterUXElement = function (game, gameplayState) {
 
   this.gameplayState = gameplayState;
 
+  this.pathMarkers = this.game.add.group();
+  for (var i = 0; i < 10; i++) {
+    var marker = this.game.add.sprite(0, 0, 'map_sprites', 10);
+    this.pathMarkers.addChild(marker);
+    marker.kill();
+  }
+
   this.cursorX = -1;
   this.cursorY = -1;
 
@@ -185,6 +192,9 @@ MoveCharacterUXElement.prototype.show = function(onHide) {
   this.cursor.renderable = true;
   this.moveIndicateText.visible = true;
 
+  this.pathMarkers.killAll();
+  this.nextMarkerFrame = 0;
+
   this.steps = [];
   this.steps.push({ x: this.cursorX, y: this.cursorY });
 
@@ -198,6 +208,8 @@ MoveCharacterUXElement.prototype.hide = function() {
   this.gameplayState.cursorUX.cursorX = this.cursorX;
   this.gameplayState.cursorUX.cursorY = this.cursorY;
   this.gameplayState.cursorUX.refreshCursorPosition();
+
+  this.pathMarkers.killAll();
 
   this.cursor.renderable = false;
   this.moveIndicateText.visible = false;
@@ -216,6 +228,7 @@ MoveCharacterUXElement.prototype.onConfirm = function () {
   var command = new GameLogic.MoveCommand();
   command.piece = this.selectedPiece;
   command.steps = this.steps;
+  command.steps.forEach(function (step) { delete step.marker; });
 
   this.selectedPiece = -1;
   this.steps = null;
@@ -241,6 +254,7 @@ MoveCharacterUXElement.prototype.onDown = function() {
 
   this.cursorY++;
   this.refreshCursorPosition();
+  this.nextMarkerFrame = 209;
 
   this.updateStepsStack();
 };
@@ -252,6 +266,7 @@ MoveCharacterUXElement.prototype.onUp = function() {
 
   this.cursorY--;
   this.refreshCursorPosition();
+  this.nextMarkerFrame = 211;
 
   this.updateStepsStack();
 };
@@ -263,6 +278,7 @@ MoveCharacterUXElement.prototype.onRight = function() {
 
   this.cursorX++;
   this.refreshCursorPosition();
+  this.nextMarkerFrame = 210;
 
   this.updateStepsStack();
 };
@@ -274,14 +290,23 @@ MoveCharacterUXElement.prototype.onLeft = function() {
 
   this.cursorX--;
   this.refreshCursorPosition();
+  this.nextMarkerFrame = 212;
 
   this.updateStepsStack();
 };
 MoveCharacterUXElement.prototype.updateStepsStack = function () {
   if (this.steps.length > 1 && (this.steps[this.steps.length - 2].x === this.cursorX && this.steps[this.steps.length - 2].y === this.cursorY)) {
-    this.steps.pop(); // if we're backtracking, pop one off the steps instead of pushing
+    var oldStep = this.steps.pop(); // if we're backtracking, pop one off the steps instead of pushing
+    oldStep.marker.kill();
   } else {
     this.steps.push({ x: this.cursorX, y: this.cursorY });
+
+    var marker = this.pathMarkers.getFirstDead();
+    marker.x = (this.steps[this.steps.length - 1].x) * 16;
+    marker.y = (this.steps[this.steps.length - 1].y) * 16;
+    marker.frame = this.nextMarkerFrame;
+    marker.revive();
+    this.steps[this.steps.length - 1].marker = marker;
   }
 };
 MoveCharacterUXElement.prototype.refreshCursorPosition = function () {
