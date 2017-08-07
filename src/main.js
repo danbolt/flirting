@@ -13,6 +13,8 @@ PortraitMap['Lester'] = 9;
 PortraitMap['Judd'] = 10;
 PortraitMap['Tom'] = 11;
 PortraitMap['Sven'] = 12;
+PortraitMap['Holt'] = 10;
+PortraitMap['Lyle'] = 12;
 
 
 var Gameplay = function () {
@@ -74,138 +76,6 @@ Gameplay.prototype.create = function () {
     character.style = parseInt(data.properties.style);
     this.boardState.pieces.push(character);
   }, this);
-
-  /*
-  var testChar1 = new GameLogic.BoardPiece();
-  testChar1.position.x = 7;
-  testChar1.position.y = 2;
-  testChar1.name = 'Bapi';
-  testChar1.hp = 5;
-  testChar1.team = 0;
-  testChar1.romanceType = GameLogic.RomanceType.STYLISH;
-  testChar1.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(testChar1);
-
-  var herob = new GameLogic.BoardPiece();
-  herob.position.x = 9;
-  herob.position.y = 3;
-  herob.name = 'Yang';
-  herob.hp = 4;
-  herob.team = 0;
-  herob.romanceType = GameLogic.RomanceType.CLEVER;
-  herob.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(herob);
-
-  var heroc = new GameLogic.BoardPiece();
-  heroc.position.x = 8;
-  heroc.position.y = 4;
-  heroc.name = 'Chet';
-  heroc.hp = 5;
-  heroc.team = 0;
-  heroc.romanceType = GameLogic.RomanceType.RUGGED;
-  heroc.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(heroc);
-
-  var herod = new GameLogic.BoardPiece();
-  herod.position.x = 3;
-  herod.position.y = 3;
-  herod.name = 'Jace';
-  herod.hp = 5;
-  herod.team = 0;
-  herod.romanceType = GameLogic.RomanceType.RUGGED;
-  herod.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(herod);
-
-  var hero3 = new GameLogic.BoardPiece();
-  hero3.position.x = 2;
-  hero3.position.y = 3;
-  hero3.name = 'Neil';
-  hero3.hp = 5;
-  hero3.team = 0;
-  hero3.romanceType = GameLogic.RomanceType.RUGGED;
-  hero3.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(hero3);
-
-  var herof = new GameLogic.BoardPiece();
-  herof.position.x = 2;
-  herof.position.y = 4;
-  herof.name = 'Sanders';
-  herof.hp = 5;
-  herof.team = 0;
-  herof.romanceType = GameLogic.RomanceType.RUGGED;
-  herof.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(herof);
-
-  var herog = new GameLogic.BoardPiece();
-  herog.position.x = 1;
-  herog.position.y = 3;
-  herog.name = 'Lester';
-  herog.hp = 5;
-  herog.team = 0;
-  herog.romanceType = GameLogic.RomanceType.RUGGED;
-  herog.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(herog);
-
-  var testChar2 = new GameLogic.BoardPiece();
-  testChar2.position.x = 2;
-  testChar2.position.y = 6;
-  testChar2.name = 'Fish';
-  testChar2.hp = 1;
-  testChar2.team = 0;
-  testChar2.style = GameLogic.Style.BOLD;
-  testChar2.romanceType = GameLogic.RomanceType.CLEVER;
-  this.boardState.pieces.push(testChar2);
-
-  var testChar3 = new GameLogic.BoardPiece();
-  testChar3.position.x = 3;
-  testChar3.position.y = 7;
-  testChar3.name = 'Joss';
-  testChar3.hp = 4;
-  testChar3.team = 0;
-  testChar3.style = GameLogic.Style.SWEET;
-  testChar3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
-  this.boardState.pieces.push(testChar3);
-
-  var baddie1 = new GameLogic.BoardPiece();
-  baddie1.position.x = 3;
-  baddie1.position.y = 12;
-  baddie1.name = 'Judd';
-  baddie1.hp = 4;
-  baddie1.team = 1;
-  baddie1.style = GameLogic.Style.SWEET;
-  baddie1.romanceType = GameLogic.RomanceType.INTELLECTUAL;
-  this.boardState.pieces.push(baddie1);
-
-  baddie1 = new GameLogic.BoardPiece();
-  baddie1.position.x = 4;
-  baddie1.position.y = 12;
-  baddie1.name = 'Judd';
-  baddie1.hp = 4;
-  baddie1.team = 1;
-  baddie1.style = GameLogic.Style.SWEET;
-  baddie1.romanceType = GameLogic.RomanceType.INTELLECTUAL;
-  this.boardState.pieces.push(baddie1);
-
-  var baddie2 = new GameLogic.BoardPiece();
-  baddie2.position.x = 1;
-  baddie2.position.y = 13;
-  baddie2.name = 'Tom';
-  baddie2.hp = 4;
-  baddie2.team = 1;
-  baddie2.style = GameLogic.Style.SWEET;
-  baddie2.romanceType = GameLogic.RomanceType.INTELLECTUAL;
-  this.boardState.pieces.push(baddie2);
-
-  var baddie3 = new GameLogic.BoardPiece();
-  baddie3.position.x = 4;
-  baddie3.position.y = 14;
-  baddie3.name = 'Sven';
-  baddie3.hp = 4;
-  baddie3.team = 1;
-  baddie3.style = GameLogic.Style.SWEET;
-  baddie3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
-  this.boardState.pieces.push(baddie3);
-  */
 
   // initialize characters on map
   this.characterSprites = this.game.add.group();
@@ -400,19 +270,13 @@ Gameplay.prototype.processCommand = function (command) {
         var characterToMove = null;
         this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.piece) { characterToMove = sprite } });
 
-        var setCamera = false;
+        if (this.boardState.currentTurnTeam() === 1) {
+          this.game.camera.follow(characterToMove, Phaser.Camera.FOLLOW_TOPDOWN, 0.4, 0.4);
+        }
         result.steps.forEach(function (step) {
           var t = this.game.add.tween(characterToMove);
           t.to( { x: step.x * this.tileSize, y: step.y * this.tileSize }, 100 );
-          resultTweens.push(t);
-
-          if (setCamera === false && this.boardState.currentTurnTeam() === 1) {
-            t.onStart.add(function () {
-              this.game.camera.follow(characterToMove, Phaser.Camera.FOLLOW_TOPDOWN, 0.4, 0.4);
-            }, this);
-
-            setCamera = true;
-          }
+          resultTweens.push(t); 
         }, this);
 
         if (this.boardState.currentTurnTeam() === 1) {
