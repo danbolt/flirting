@@ -161,6 +161,16 @@ Gameplay.prototype.create = function () {
   baddie1.romanceType = GameLogic.RomanceType.INTELLECTUAL;
   this.boardState.pieces.push(baddie1);
 
+  baddie1 = new GameLogic.BoardPiece();
+  baddie1.position.x = 4;
+  baddie1.position.y = 12;
+  baddie1.name = 'Judd';
+  baddie1.hp = 4;
+  baddie1.team = 1;
+  baddie1.style = GameLogic.Style.SWEET;
+  baddie1.romanceType = GameLogic.RomanceType.INTELLECTUAL;
+  this.boardState.pieces.push(baddie1);
+
   var baddie2 = new GameLogic.BoardPiece();
   baddie2.position.x = 1;
   baddie2.position.y = 13;
@@ -186,20 +196,6 @@ Gameplay.prototype.create = function () {
   this.boardState.pieces.forEach(function (piece, index) {
     var newCharacterOnMap = this.game.add.sprite(piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'map_sprites', 32);
     newCharacterOnMap.data.index = index;
-
-    /*
-    // This should probably just be math'd for the index, but at the moment we haven't made sprites for everyone yet
-    if (piece.name === 'Bapi') {
-      newCharacterOnMap.animations.add('idle', [32, 33, 34], 3, true);
-    } else if (piece.name === 'Chet') {
-      newCharacterOnMap.animations.add('idle', [35, 36, 37], 3, true);
-    } else if (piece.name === 'Fish') {
-      newCharacterOnMap.animations.add('idle', [38, 39, 40], 3, true);
-    } else if (piece.name === 'Yang') {
-      newCharacterOnMap.animations.add('idle', [41, 42, 43], 3, true);
-    } else {
-      newCharacterOnMap.animations.add('idle', [29, 30, 31], 3, true);
-    }*/
 
     newCharacterOnMap.animations.add('idle', [29, 30, 31].map(function (val) { return val + ((PortraitMap[piece.name] ? PortraitMap[piece.name] : 0) * 3) }, this).map(function (v) {  if (v >= 66 && v <= 70) { return v + 5; } else { return v; } }), 3, true);
 

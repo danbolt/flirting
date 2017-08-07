@@ -789,7 +789,7 @@ TurnStartUXElement.prototype.show = function(onHide) {
   this.game.camera.follow(this.gameplayState.cursorUX.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
 
   this.slideText.visible = true;
-  this.slideText.cameraOffset.x = -50;
+  this.slideText.cameraOffset.x = -100;
 
   if (this.gameplayState.boardState.currentTurnTeam() === 0) {
     this.slideText.text = 'Flirt Round!';
@@ -800,9 +800,9 @@ TurnStartUXElement.prototype.show = function(onHide) {
   var slideTextTweenA = this.game.add.tween(this.slideText.cameraOffset);
   slideTextTweenA.to( { x: this.game.width / 2 - 50 }, 500, Phaser.Easing.Cubic.In);
   var slideTextTweenB = this.game.add.tween(this.slideText.cameraOffset);
-  slideTextTweenB.to( { x: this.game.width / 2 + 25 }, 700, Phaser.Easing.Linear.None);
+  slideTextTweenB.to( { x: this.game.width / 2 + 25 }, 1000, Phaser.Easing.Linear.None);
   var slideTextTweenC = this.game.add.tween(this.slideText.cameraOffset);
-  slideTextTweenC.to( { x: this.game.width + 100}, 800, Phaser.Easing.Cubic.Out);
+  slideTextTweenC.to( { x: this.game.width + 150}, 800, Phaser.Easing.Cubic.Out);
   slideTextTweenA.chain(slideTextTweenB);
   slideTextTweenB.chain(slideTextTweenC);
 
