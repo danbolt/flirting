@@ -49,6 +49,7 @@ Gameplay.prototype.create = function () {
 
   this.ai = new YaoiJamAI(1);
 
+  // Load terrain information from terrain map
   mapLayer.layer.data.forEach(function (row, y) {
     this.boardState.terrain.push([]);
 
@@ -61,6 +62,20 @@ Gameplay.prototype.create = function () {
     }, this);
   }, this);
 
+  // Load piece information from Tiled map
+  this.tilemap.objects.pieces.forEach(function (data) {
+    var character = new GameLogic.BoardPiece();
+    character.position.x = ~~(data.x / 16);
+    character.position.y = ~~(data.y / 16);
+    character.name = data.name;
+    character.hp = parseInt(data.properties.hp);
+    character.team = parseInt(data.properties.team);
+    character.romanceType = parseInt(data.properties.romanceType);
+    character.style = parseInt(data.properties.style);
+    this.boardState.pieces.push(character);
+  }, this);
+
+  /*
   var testChar1 = new GameLogic.BoardPiece();
   testChar1.position.x = 7;
   testChar1.position.y = 2;
@@ -190,6 +205,7 @@ Gameplay.prototype.create = function () {
   baddie3.style = GameLogic.Style.SWEET;
   baddie3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
   this.boardState.pieces.push(baddie3);
+  */
 
   // initialize characters on map
   this.characterSprites = this.game.add.group();

@@ -46,8 +46,8 @@ var SelectCharacterUXElement = function (game, gameplayState) {
 
   this.gameplayState = gameplayState;
 
-  this.cursorX = 2;
-  this.cursorY = 2;
+  this.cursorX = 5;
+  this.cursorY = 5;
 
   this.cursor = this.game.add.sprite(0, 0, 'extraUI_48x48', 1);
   this.cursor.animations.add('spin', [49, 27, 28, 29,  37, 38, 39, 47, 48 ], 14, true);
