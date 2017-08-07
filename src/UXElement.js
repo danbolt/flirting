@@ -46,8 +46,8 @@ var SelectCharacterUXElement = function (game, gameplayState) {
 
   this.gameplayState = gameplayState;
 
-  this.cursorX = 2;
-  this.cursorY = 2;
+  this.cursorX = 5;
+  this.cursorY = 5;
 
   this.cursor = this.game.add.sprite(0, 0, 'extraUI_48x48', 1);
   this.cursor.animations.add('spin', [49, 27, 28, 29,  37, 38, 39, 47, 48 ], 14, true);
@@ -270,10 +270,37 @@ var CheckFlirtUXElement = function (game, gameplayState) {
   this.flirtOptions = [];
   this.flirtIndex = -1;
 
+  this.cursor = this.game.add.sprite(0, 0, 'extraUI_48x48', 1);
+  this.cursor.animations.add('spin', [49, 27, 28, 29,  37, 38, 39, 47, 48 ], 14, true);
+  this.cursor.animations.play('spin');
+  this.cursor.tint = 0x552221;
+
+  var c2 = this.cursor.addChild(this.game.add.sprite(0, 0, 'extraUI_48x48', 1));
+  c2.animations.add('spin', [37, 38, 39, 47, 48, 49, 27, 28, 29], 14, true);
+  c2.animations.play('spin');
+  c2.tint = 0xCC3333;
+  this.cursor.visible = false;
 
   this.moveIndicateText = this.game.add.bitmapText(2, 2, 'newsgeek', '', 12);
   this.moveIndicateText.visible = false;
   this.moveIndicateText.fixedToCamera = true;
+
+  this.character1TypeText = this.game.add.bitmapText(2, 32, 'newsgeek', 'TEAM1', 14);
+  this.character2TypeText = this.game.add.bitmapText(2, 64, 'newsgeek', 'TEAM2', 14);
+  this.character2TypeText.align = 'center';
+  this.character2TypeText.anchor.x = 0.5;
+  this.character1TypeText.visible = false;
+  this.character2TypeText.visible = false;
+  this.character2TypeText.data.tween = this.game.add.tween(this.character2TypeText);
+  this.advantageIcon = this.character2TypeText.addChild(this.game.add.sprite(2, 0, 'extraUI_48x48', 80));
+  this.advantageIcon.scale.set(0.5);
+  this.advantageIcon.anchor.x = 0.5;
+  this.advantageIcon.x = 16;
+  this.advantageIcon.y = -24;
+  this.advantageIcon.animations.add('arrow', [80, 81, 82, 81], 10, true);
+  this.advantageIcon.animations.play('arrow');
+  this.advantageIcon.animations.add('equal', [83, 84, 85, 84], 10, true);
+  this.advantageIcon.animations.play('equal');
 };
 CheckFlirtUXElement.prototype = Object.create(UXElement.prototype);
 CheckFlirtUXElement.prototype.show = function(onHide) {
@@ -286,6 +313,9 @@ CheckFlirtUXElement.prototype.show = function(onHide) {
 
   this.flirtIndex = 0;
   this.updateSelectedView();
+  this.cursor.visible = true;
+  //this.character1TypeText.visible = true;
+  this.character2TypeText.visible = true;
 
   this.moveIndicateText.visible = true;
 };
@@ -293,6 +323,9 @@ CheckFlirtUXElement.prototype.hide = function() {
   UXElement.prototype.hide.call(this);
 
   this.moveIndicateText.visible = false;
+  this.cursor.visible = false;
+  this.character1TypeText.visible = false;
+  this.character2TypeText.visible = false;
 };
 CheckFlirtUXElement.prototype.onConfirm = function () {
   if (this.confirm instanceof SelectFlirtStyleUXElement) {
@@ -314,8 +347,45 @@ CheckFlirtUXElement.prototype.onUp = function() {
   this.flirtIndex = (this.flirtIndex - 1 + this.flirtOptions.length) % this.flirtOptions.length;
   this.updateSelectedView();
 };
+CheckFlirtUXElement.prototype.onRight = function() {
+  this.flirtIndex = (this.flirtIndex + 1) % this.flirtOptions.length;
+  this.updateSelectedView();
+};
+CheckFlirtUXElement.prototype.onLeft = function() {
+  this.flirtIndex = (this.flirtIndex - 1 + this.flirtOptions.length) % this.flirtOptions.length;
+  this.updateSelectedView();
+};
 CheckFlirtUXElement.prototype.updateSelectedView = function() {
   this.moveIndicateText.text = 'Have ' + this.gameplayState.boardState.pieces[this.attackingPiece].name + ' flirt with ' + this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].name + '?';
+
+  this.cursor.x = this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].position.x * 16 - 2;
+  this.cursor.y = this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].position.y * 16 - 3;
+
+  this.character1TypeText.x = this.gameplayState.cursorUX.cursor.x + 18;
+  this.character1TypeText.y = this.gameplayState.cursorUX.cursor.y - 14;
+  this.character1TypeText.text = this.gameplayState.boardState.pieces[this.attackingPiece].romanceType;
+
+  this.character2TypeText.x = this.cursor.x + 8;
+  this.character2TypeText.y = this.cursor.y + 20;
+  this.character2TypeText.text = GameLogic.RomanceType.getStringName(this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].romanceType);
+
+  this.character2TypeText.data.tween.stop();
+  this.character2TypeText.data.tween = this.game.add.tween(this.character2TypeText);
+  this.character2TypeText.data.tween.to( { y: this.character2TypeText.y - 5 }, 600, Phaser.Easing.Quadratic.In, false, 120, -1, true );
+  this.character2TypeText.data.tween.start();
+
+  var damagePrediction = GameLogic.ComputeAttackDamage(-1, -1, this.gameplayState.boardState.pieces[this.attackingPiece].romanceType, this.gameplayState.boardState.pieces[this.flirtOptions[this.flirtIndex]].romanceType);
+  if (damagePrediction > 0) {
+    this.advantageIcon.tint = 0x22AA22;
+    this.advantageIcon.animations.play('arrow');
+    this.advantageIcon.scale.set(0.5, 0.5);
+    this.advantageIcon.y = -24;
+  } else {
+    this.advantageIcon.tint = 0xAA1122;
+    this.advantageIcon.animations.play('arrow');
+    this.advantageIcon.scale.set(0.5, -0.5);
+    this.advantageIcon.y = -16;
+  }
 };
 
 var SelectFlirtStyleUXElement = function (game, gameplayState) {
@@ -449,9 +519,6 @@ var DialogueUXElement = function(game, gameplayState) {
   this.portraitA = this.game.add.sprite(           -100, this.game.height - 140, 'portraits', 1);
   this.portraitB = this.game.add.sprite(this.game.width, this.game.height - 140, 'portraits', 2);
 
-  //this.textArea = this.game.add.sprite(54, this.game.height + 18, 'map_sprites', 5);
-  //this.textArea.width = this.game.width -120 + 16;
-  //this.textArea.height = 48 + 8;
   this.textArea = new NineSliceMenu(this.game, 54, this.game.height + 18, this.game.width - 120 + 16, 48 + 8);
   this.dialogueText = this.game.add.bitmapText(60, this.game.height, 'newsgeek', 'I love flowers in the springtime. What happens if we add more dialogue? We could keep going, but we only get 4 lines max. Keep going too. I want to see more and more. It\'d be easier if I was able to keep going as well. I want to keep typing.', 12);
   this.dialogueText.maxWidth = this.textArea.width - 8;
@@ -465,6 +532,14 @@ var DialogueUXElement = function(game, gameplayState) {
   this.backing.height = this.game.height;
   this.backing.alpha = 0;
 
+  this.hearts = this.game.add.group();
+  this.hearts.position.set(this.game.width / 2 - (24 * 7 * 0.75 * 0.5), -50);
+  for (var i = 0; i < 7; i++) {
+    var newHeart = this.game.add.sprite(i * 24, 0, 'extraUI_48x48', 18);
+    this.hearts.addChild(newHeart);
+  }
+  this.hearts.scale.set(0.75);
+
   this.elements.addChild(this.backing);
   this.elements.addChild(this.portraitA);
   this.elements.addChild(this.portraitB);
@@ -472,6 +547,7 @@ var DialogueUXElement = function(game, gameplayState) {
   this.elements.addChild(this.speakerNameB);
   this.elements.addChild(this.textArea);
   this.elements.addChild(this.dialogueText);
+  this.elements.addChild(this.hearts);
   this.elements.forEach(function (c) {
     c.visible = false;
   });
@@ -480,7 +556,7 @@ var DialogueUXElement = function(game, gameplayState) {
 };
 DialogueUXElement.prototype = Object.create(UXElement.prototype);
 
-DialogueUXElement.prototype.show = function(onHide) {
+DialogueUXElement.prototype.show = function(onHide, heartCount, heartDelta, reverse) {
   if (this.showing) { return; }
 
   UXElement.prototype.show.call(this, onHide);
@@ -518,6 +594,17 @@ DialogueUXElement.prototype.show = function(onHide) {
   var moveDialogueText = this.game.add.tween(this.dialogueText);
   moveDialogueText.to({ y: 122 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveDialogueText.start();
+  var moveHearts = this.game.add.tween(this.hearts);
+  moveHearts.to( {y: 32}, tweenTime, Phaser.Easing.Cubic.In);
+  moveHearts.start();
+
+  this.hearts.children.forEach(function (heart, index) {
+    heart.frame = index < (7 - heartCount) ? 17 : 18;
+
+    if (!reverse) { heart.frame += 39; }
+  }, this);
+  this.heartCount = heartCount;
+  this.heartDelta = heartDelta;
 
   moveDialogueText.onComplete.add(function () {
     this.game.time.events.add(300, function () {
@@ -588,11 +675,20 @@ DialogueUXElement.prototype.show = function(onHide) {
           tweens[0].start();
         };
 
+        var swoonSprite = function (portrait) {
+          var tween = this.game.add.tween(portrait.scale);
+          tween.to( { x: [1.1, 1], y: [1.1, 1] }, 1600, Phaser.Easing.Cubic.Out);
+          tween.start();
+        };
+
         if (this.dialogueData[dialogeIndex].flirterStagger) {
           shakeSprite.call(this, this.portraitB);
         }
         if (this.dialogueData[dialogeIndex].targetStagger) {
           shakeSprite.call(this, this.portraitA);
+        }
+        if (this.dialogueData[dialogeIndex].targetSwoon) {
+          swoonSprite.call(this, this.portraitA);
         }
 
         tickLettersLoop = this.game.time.events.loop(60, tickOneDialogueItem, this, function () {
@@ -601,7 +697,36 @@ DialogueUXElement.prototype.show = function(onHide) {
           if (dialogeIndex < this.dialogueData.length) {
             this.game.time.events.add(1450, playOneDialogueItem, this);
           } else {
-            this.game.time.events.add(2000, this.hide, this);
+            this.game.time.events.add(200, function () {
+
+              for (var i = 0; i < this.hearts.children.length; i++ ) {
+                var currentHeart = this.hearts.children[i];
+
+                if (i < ( (7 - this.heartCount + this.heartDelta) )) {
+                  currentHeart.frame = 17;
+
+                  if (i < ( (7 - this.heartCount + this.heartDelta)) &&
+                      i >= ( (7 - this.heartCount) )) {
+                    var t = this.game.add.tween(currentHeart.scale);
+                    t.to( {x: [1.1, 1], y: [1.1, 1]}, 200, Phaser.Easing.Cubic.InOut);
+                    t.start();
+                  }
+                } else {
+                  currentHeart.frame = 18;
+
+                  if (i >= ( (7 - this.heartCount + this.heartDelta) ) &&
+                      i < ( (7 - this.heartCount) )) {
+                    var t = this.game.add.tween(currentHeart.scale);
+                    t.to( {x: [0.8, 1.1, 1], y: [0.8, 1.1, 1]}, 320, Phaser.Easing.Cubic.InOut);
+                    t.start();
+                  }
+                }
+
+                if (!reverse) { currentHeart.frame += 39; }
+              }
+
+              this.game.time.events.add(1800, this.hide, this);
+            }, this);
           }
         });
       };
@@ -636,6 +761,9 @@ DialogueUXElement.prototype.hide = function() {
   var moveTitleB = this.game.add.tween(this.speakerNameB);
   moveTitleB.to({ x: this.game.width + 50 }, tweenTime, Phaser.Easing.Cubic.InOut );
   moveTitleB.start();
+  var moveHearts = this.game.add.tween(this.hearts);
+  moveHearts.to( {y: -50}, tweenTime, Phaser.Easing.Cubic.Out);
+  moveHearts.start();
 
   this.dialogueData = null;
 
@@ -647,7 +775,7 @@ var TurnStartUXElement = function(game, gameplayState) {
 
   this.gameplayState = gameplayState;
 
-  this.slideText = this.game.add.bitmapText(this.game.width / 2, this.game.height / 2, 'newsgeek', 'TURN', 16);
+  this.slideText = this.game.add.bitmapText(this.game.width / 2, this.game.height / 2, 'newsgeek', 'TURN', 20);
   this.slideText.visible = false;
   this.slideText.anchor.set(0.5, 0.5);
   this.slideText.align = 'center';
@@ -661,20 +789,20 @@ TurnStartUXElement.prototype.show = function(onHide) {
   this.game.camera.follow(this.gameplayState.cursorUX.cursor, Phaser.Camera.FOLLOW_TOPDOWN, 0.2, 0.2);
 
   this.slideText.visible = true;
-  this.slideText.cameraOffset.x = -50;
+  this.slideText.cameraOffset.x = -100;
 
   if (this.gameplayState.boardState.currentTurnTeam() === 0) {
-    this.slideText.text = 'Player Turn';
+    this.slideText.text = 'Flirt Round!';
   } else {
-    this.slideText.text = 'Crush Turn';
+    this.slideText.text = 'Rebuff Round!';
   }
 
   var slideTextTweenA = this.game.add.tween(this.slideText.cameraOffset);
   slideTextTweenA.to( { x: this.game.width / 2 - 50 }, 500, Phaser.Easing.Cubic.In);
   var slideTextTweenB = this.game.add.tween(this.slideText.cameraOffset);
-  slideTextTweenB.to( { x: this.game.width / 2 + 25 }, 700, Phaser.Easing.Linear.None);
+  slideTextTweenB.to( { x: this.game.width / 2 + 25 }, 1000, Phaser.Easing.Linear.None);
   var slideTextTweenC = this.game.add.tween(this.slideText.cameraOffset);
-  slideTextTweenC.to( { x: this.game.width + 100}, 800, Phaser.Easing.Cubic.Out);
+  slideTextTweenC.to( { x: this.game.width + 150}, 800, Phaser.Easing.Cubic.Out);
   slideTextTweenA.chain(slideTextTweenB);
   slideTextTweenB.chain(slideTextTweenC);
 

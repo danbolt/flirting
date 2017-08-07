@@ -10,6 +10,11 @@ PortraitMap['Sanders'] = 6;
 PortraitMap['Neil'] = 7;
 PortraitMap['Jace'] = 8;
 PortraitMap['Lester'] = 9;
+PortraitMap['Judd'] = 10;
+PortraitMap['Tom'] = 11;
+PortraitMap['Sven'] = 12;
+PortraitMap['Holt'] = 10;
+PortraitMap['Lyle'] = 12;
 
 
 var Gameplay = function () {
@@ -44,8 +49,9 @@ Gameplay.prototype.create = function () {
   this.boardState.teams.push('red');
   this.boardState.teams.push('blue');
 
-  this.ai = new DumbMoveAI(1);
+  this.ai = new YaoiJamAI(1);
 
+  // Load terrain information from terrain map
   mapLayer.layer.data.forEach(function (row, y) {
     this.boardState.terrain.push([]);
 
@@ -58,95 +64,18 @@ Gameplay.prototype.create = function () {
     }, this);
   }, this);
 
-  var testChar1 = new GameLogic.BoardPiece();
-  testChar1.position.x = 7;
-  testChar1.position.y = 2;
-  testChar1.name = 'Bapi';
-  testChar1.hp = 5;
-  testChar1.team = 0;
-  testChar1.romanceType = GameLogic.RomanceType.STYLISH;
-  testChar1.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(testChar1);
-
-  var herob = new GameLogic.BoardPiece();
-  herob.position.x = 9;
-  herob.position.y = 3;
-  herob.name = 'Yang';
-  herob.hp = 4;
-  herob.team = 0;
-  herob.romanceType = GameLogic.RomanceType.CLEVER;
-  herob.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(herob);
-
-  var heroc = new GameLogic.BoardPiece();
-  heroc.position.x = 8;
-  heroc.position.y = 4;
-  heroc.name = 'Chet';
-  heroc.hp = 5;
-  heroc.team = 0;
-  heroc.romanceType = GameLogic.RomanceType.RUGGED;
-  heroc.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(heroc);
-
-  var herod = new GameLogic.BoardPiece();
-  herod.position.x = 5;
-  herod.position.y = 5;
-  herod.name = 'Sanders';
-  herod.hp = 5;
-  herod.team = 0;
-  herod.romanceType = GameLogic.RomanceType.RUGGED;
-  herod.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(herod);
-
-  var heroe = new GameLogic.BoardPiece();
-  heroe.position.x = 6;
-  heroe.position.y = 6;
-  heroe.name = 'Neil';
-  heroe.hp = 5;
-  heroe.team = 0;
-  heroe.romanceType = GameLogic.RomanceType.RUGGED;
-  heroe.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(heroe);
-
-  var herof = new GameLogic.BoardPiece();
-  herof.position.x = 2;
-  herof.position.y = 3;
-  herof.name = 'Jace';
-  herof.hp = 5;
-  herof.team = 0;
-  herof.romanceType = GameLogic.RomanceType.RUGGED;
-  herof.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(herof);
-
-  var herog = new GameLogic.BoardPiece();
-  herog.position.x = 1;
-  herog.position.y = 3;
-  herog.name = 'Lester';
-  herog.hp = 5;
-  herog.team = 0;
-  herog.romanceType = GameLogic.RomanceType.RUGGED;
-  herog.style = GameLogic.Style.NONE;
-  this.boardState.pieces.push(herog);
-
-  var testChar2 = new GameLogic.BoardPiece();
-  testChar2.position.x = 2;
-  testChar2.position.y = 4;
-  testChar2.name = 'Fish';
-  testChar2.hp = 1;
-  testChar2.team = 1;
-  testChar2.style = GameLogic.Style.BOLD;
-  testChar2.romanceType = GameLogic.RomanceType.CLEVER;
-  this.boardState.pieces.push(testChar2);
-
-  var testChar3 = new GameLogic.BoardPiece();
-  testChar3.position.x = 3;
-  testChar3.position.y = 5;
-  testChar3.name = 'Joss';
-  testChar3.hp = 1;
-  testChar3.team = 1;
-  testChar3.style = GameLogic.Style.SWEET;
-  testChar3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
-  this.boardState.pieces.push(testChar3);
+  // Load piece information from Tiled map
+  this.tilemap.objects.pieces.forEach(function (data) {
+    var character = new GameLogic.BoardPiece();
+    character.position.x = ~~(data.x / 16);
+    character.position.y = ~~(data.y / 16);
+    character.name = data.name;
+    character.hp = parseInt(data.properties.hp);
+    character.team = parseInt(data.properties.team);
+    character.romanceType = parseInt(data.properties.romanceType);
+    character.style = parseInt(data.properties.style);
+    this.boardState.pieces.push(character);
+  }, this);
 
   // initialize characters on map
   this.characterSprites = this.game.add.group();
@@ -154,18 +83,7 @@ Gameplay.prototype.create = function () {
     var newCharacterOnMap = this.game.add.sprite(piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'map_sprites', 32);
     newCharacterOnMap.data.index = index;
 
-    // This should probably just be math'd for the index, but at the moment we haven't made sprites for everyone yet
-    if (piece.name === 'Bapi') {
-      newCharacterOnMap.animations.add('idle', [32, 33, 34], 3, true);
-    } else if (piece.name === 'Chet') {
-      newCharacterOnMap.animations.add('idle', [35, 36, 37], 3, true);
-    } else if (piece.name === 'Fish') {
-      newCharacterOnMap.animations.add('idle', [38, 39, 40], 3, true);
-    } else if (piece.name === 'Yang') {
-      newCharacterOnMap.animations.add('idle', [41, 42, 43], 3, true);
-    } else {
-      newCharacterOnMap.animations.add('idle', [29, 30, 31], 3, true);
-    }
+    newCharacterOnMap.animations.add('idle', [29, 30, 31].map(function (val) { return val + ((PortraitMap[piece.name] ? PortraitMap[piece.name] : 0) * 3) }, this).map(function (v) {  if (v >= 66 && v <= 70) { return v + 5; } else { return v; } }), 3, true);
 
     newCharacterOnMap.animations.play('idle');
     this.characterSprites.addChild(newCharacterOnMap);
@@ -183,11 +101,20 @@ Gameplay.prototype.create = function () {
   backing.height = this.game.height;
   this.dataPane.addChild(backing);
   this.dataPane.addChild(new NineSliceMenu(this.game, 0, 0, backing.width, backing.height));
-  this.portrait = this.game.add.sprite(12, this.game.height - 160 + 24, 'portraits', 0);
-  this.dataPane.addChild(this.portrait);
-  this.selectedCharacterText = this.game.add.bitmapText(0, 0, 'newsgeek', '', 12);
+  this.selectedCharacterText = this.game.add.bitmapText(0, 0, 'newsgeek', '', 16);
   this.selectedCharacterText.smoothed = false;
   this.dataPane.addChild(this.selectedCharacterText);
+  this.selectedCharacterLife = this.game.add.group();
+  this.dataPane.addChild(this.selectedCharacterLife);
+  this.portrait = this.game.add.sprite(12, this.game.height - 160 + 24, 'portraits', 0);
+  this.dataPane.addChild(this.portrait);
+  this.selectedCharacterLife.position.set(4, 40);
+  for (var i = 0; i < 7; i++) {
+    var newHeart = this.game.add.sprite(i * 24 * 0.6, 0, 'extraUI_48x48', 18);
+    newHeart.scale.set(0.6);
+    this.selectedCharacterLife.addChild(newHeart);
+  }
+  this.selectedCharacterLife.visible = false;
   this.selectedCharacterText.position.set(8, 8);
   this.turnInfoText = this.game.add.bitmapText(4, this.game.height - 16 - 4, 'newsgeek', 'TURN', 16);
   this.turnInfoText.tint = 0xEE1112;
@@ -314,10 +241,17 @@ Gameplay.prototype.refreshPaneData = function () {
     var selectedPiece = selectedPieces[0];
     this.portrait.frame = PortraitMap[selectedPiece.name];
 
-    this.selectedCharacterText.text = selectedPiece.name + '\n love: ' + selectedPiece.hp + '\n' + GameLogic.RomanceType.getStringName(selectedPiece.romanceType);
+    this.selectedCharacterText.text = selectedPiece.name + '\n' + GameLogic.RomanceType.getStringName(selectedPiece.romanceType);
+    this.selectedCharacterLife.visible = true;
+    for (var i = 0; i < this.selectedCharacterLife.children.length; i++) {
+      var h = this.selectedCharacterLife.children[i];
+
+      h.frame = 17 + (selectedPiece.team === 0 ? 39 : 0) + (i > (7 - selectedPiece.hp - 1) ? 1 : 0);
+    }
   } else {
     this.portrait.frame = 0;
     this.selectedCharacterText.text = '';
+    this.selectedCharacterLife.visible = false;
   }
 };
 Gameplay.prototype.processCommand = function (command) {
@@ -329,25 +263,20 @@ Gameplay.prototype.processCommand = function (command) {
     var resultTweens = [];
 
     results.forEach(function (result) {
+      var prevBoardState = this.boardState;
       this.boardState = GameLogic.ApplyResult(this.boardState, result);
       
       if (result instanceof GameLogic.MoveResult) {
         var characterToMove = null;
         this.characterSprites.forEach(function (sprite) { if (sprite.data.index === result.piece) { characterToMove = sprite } });
 
-        var setCamera = false;
+        if (this.boardState.currentTurnTeam() === 1) {
+          this.game.camera.follow(characterToMove, Phaser.Camera.FOLLOW_TOPDOWN, 0.4, 0.4);
+        }
         result.steps.forEach(function (step) {
           var t = this.game.add.tween(characterToMove);
           t.to( { x: step.x * this.tileSize, y: step.y * this.tileSize }, 100 );
-          resultTweens.push(t);
-
-          if (setCamera === false && this.boardState.currentTurnTeam() === 1) {
-            t.onStart.add(function () {
-              this.game.camera.follow(characterToMove, Phaser.Camera.FOLLOW_TOPDOWN, 0.4, 0.4);
-            }, this);
-
-            setCamera = true;
-          }
+          resultTweens.push(t); 
         }, this);
 
         if (this.boardState.currentTurnTeam() === 1) {
@@ -384,6 +313,7 @@ Gameplay.prototype.processCommand = function (command) {
           }
         } else if (this.boardState.pieces[result.attacker].team === 1) {
           this.dialogueUX.dialogueData = Convos.Dissing.Generic[~~(Convos.Dissing.Generic.length * Math.random())];
+          this.dialogueUX.dialogueData = this.dialogueUX.dialogueData.concat(Convos.DissResponse.Generic[~~(Math.random() * Convos.DissResponse.Generic.length)]);
           this.dialogueUX.portraitA.frame = PortraitMap[this.boardState.pieces[result.attacker].name];
           this.dialogueUX.portraitB.frame = PortraitMap[this.boardState.pieces[result.target].name];
           this.dialogueUX.speakerNameA.text = this.boardState.pieces[result.attacker].name;
@@ -396,7 +326,7 @@ Gameplay.prototype.processCommand = function (command) {
           this.dialogueUX.show(function () {
             gameplay.refreshPaneData();
             t2.start();
-          });
+          }, prevBoardState.pieces[result.target].hp, GameLogic.ComputeAttackDamage( result.style, this.boardState.pieces[result.target].style, this.boardState.pieces[result.attacker].romanceType, this.boardState.pieces[result.target].romanceType), this.boardState.pieces[result.attacker].team === 0);
         }, this);
       } else if (result instanceof GameLogic.KnockoutResult) {
         var characterToMove = null;
