@@ -380,7 +380,27 @@ var Convos = {
                       "flirterStagger": true
                     },
                   ],
-               ]
+               ],
+    "NoDamage": [
+                  [
+                    {
+                      speaker: "<FLIRTER>",
+                      "line": "Whatever! I'm fabulous! "
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<FLIRTER>",
+                      "line": "Is that supposed to leave me discouraged?"
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<FLIRTER>",
+                      "line": "Man, you play hard to get!"
+                    },
+                  ],
+               ],
   },
   "Other": {
     //
