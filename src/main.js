@@ -15,6 +15,8 @@ PortraitMap['Tom'] = 11;
 PortraitMap['Sven'] = 12;
 PortraitMap['Holt'] = 10;
 PortraitMap['Lyle'] = 12;
+PortraitMap['Ven'] = 10;
+PortraitMap['Gus'] = 11;
 
 
 var Gameplay = function () {

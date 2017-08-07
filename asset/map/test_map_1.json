@@ -23,7 +23,7 @@
                  "properties":
                     {
                      "hp":"5",
-                     "romanceType":"0",
+                     "romanceType":"3",
                      "style":"-1",
                      "team":"0"
                     },
@@ -131,7 +131,7 @@
                  "properties":
                     {
                      "hp":"5",
-                     "romanceType":"0",
+                     "romanceType":"2",
                      "style":"-1",
                      "team":"0"
                     },
@@ -149,7 +149,7 @@
                  "properties":
                     {
                      "hp":"5",
-                     "romanceType":"0",
+                     "romanceType":"4",
                      "style":"-1",
                      "team":"0"
                     },
@@ -167,7 +167,7 @@
                  "properties":
                     {
                      "hp":"5",
-                     "romanceType":"0",
+                     "romanceType":"4",
                      "style":"-1",
                      "team":"0"
                     },
@@ -203,7 +203,7 @@
                  "properties":
                     {
                      "hp":"5",
-                     "romanceType":"1",
+                     "romanceType":"3",
                      "style":"-1",
                      "team":"0"
                     },
@@ -221,7 +221,7 @@
                  "properties":
                     {
                      "hp":"5",
-                     "romanceType":"4",
+                     "romanceType":"0",
                      "style":"2",
                      "team":"1"
                     },
@@ -239,7 +239,7 @@
                  "properties":
                     {
                      "hp":"5",
-                     "romanceType":"3",
+                     "romanceType":"2",
                      "style":"2",
                      "team":"1"
                     },
@@ -249,6 +249,42 @@
                  "width":16,
                  "x":112,
                  "y":272
+                }, 
+                {
+                 "height":16,
+                 "id":15,
+                 "name":"Ven",
+                 "properties":
+                    {
+                     "hp":"5",
+                     "romanceType":"2",
+                     "style":"2",
+                     "team":"1"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":80,
+                 "y":240
+                }, 
+                {
+                 "height":16,
+                 "id":16,
+                 "name":"Gus",
+                 "properties":
+                    {
+                     "hp":"5",
+                     "romanceType":"3",
+                     "style":"2",
+                     "team":"1"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":352,
+                 "y":288
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -257,7 +293,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":15,
+ "nextobjectid":17,
  "orientation":"orthogonal",
  "properties":
     {
