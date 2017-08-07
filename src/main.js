@@ -10,6 +10,9 @@ PortraitMap['Sanders'] = 6;
 PortraitMap['Neil'] = 7;
 PortraitMap['Jace'] = 8;
 PortraitMap['Lester'] = 9;
+PortraitMap['Judd'] = 10;
+PortraitMap['Tom'] = 11;
+PortraitMap['Sven'] = 12;
 
 
 var Gameplay = function () {
@@ -88,10 +91,30 @@ Gameplay.prototype.create = function () {
   heroc.style = GameLogic.Style.NONE;
   this.boardState.pieces.push(heroc);
 
+  var herod = new GameLogic.BoardPiece();
+  herod.position.x = 3;
+  herod.position.y = 3;
+  herod.name = 'Jace';
+  herod.hp = 5;
+  herod.team = 0;
+  herod.romanceType = GameLogic.RomanceType.RUGGED;
+  herod.style = GameLogic.Style.NONE;
+  this.boardState.pieces.push(herod);
+
+  var hero3 = new GameLogic.BoardPiece();
+  hero3.position.x = 2;
+  hero3.position.y = 3;
+  hero3.name = 'Neil';
+  hero3.hp = 5;
+  hero3.team = 0;
+  hero3.romanceType = GameLogic.RomanceType.RUGGED;
+  hero3.style = GameLogic.Style.NONE;
+  this.boardState.pieces.push(hero3);
+
   var herof = new GameLogic.BoardPiece();
   herof.position.x = 2;
-  herof.position.y = 3;
-  herof.name = 'Jace';
+  herof.position.y = 4;
+  herof.name = 'Sanders';
   herof.hp = 5;
   herof.team = 0;
   herof.romanceType = GameLogic.RomanceType.RUGGED;
@@ -113,7 +136,7 @@ Gameplay.prototype.create = function () {
   testChar2.position.y = 6;
   testChar2.name = 'Fish';
   testChar2.hp = 1;
-  testChar2.team = 1;
+  testChar2.team = 0;
   testChar2.style = GameLogic.Style.BOLD;
   testChar2.romanceType = GameLogic.RomanceType.CLEVER;
   this.boardState.pieces.push(testChar2);
@@ -123,10 +146,40 @@ Gameplay.prototype.create = function () {
   testChar3.position.y = 7;
   testChar3.name = 'Joss';
   testChar3.hp = 4;
-  testChar3.team = 1;
+  testChar3.team = 0;
   testChar3.style = GameLogic.Style.SWEET;
   testChar3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
   this.boardState.pieces.push(testChar3);
+
+  var baddie1 = new GameLogic.BoardPiece();
+  baddie1.position.x = 3;
+  baddie1.position.y = 12;
+  baddie1.name = 'Judd';
+  baddie1.hp = 4;
+  baddie1.team = 1;
+  baddie1.style = GameLogic.Style.SWEET;
+  baddie1.romanceType = GameLogic.RomanceType.INTELLECTUAL;
+  this.boardState.pieces.push(baddie1);
+
+  var baddie2 = new GameLogic.BoardPiece();
+  baddie2.position.x = 1;
+  baddie2.position.y = 13;
+  baddie2.name = 'Tom';
+  baddie2.hp = 4;
+  baddie2.team = 1;
+  baddie2.style = GameLogic.Style.SWEET;
+  baddie2.romanceType = GameLogic.RomanceType.INTELLECTUAL;
+  this.boardState.pieces.push(baddie2);
+
+  var baddie3 = new GameLogic.BoardPiece();
+  baddie3.position.x = 4;
+  baddie3.position.y = 14;
+  baddie3.name = 'Sven';
+  baddie3.hp = 4;
+  baddie3.team = 1;
+  baddie3.style = GameLogic.Style.SWEET;
+  baddie3.romanceType = GameLogic.RomanceType.INTELLECTUAL;
+  this.boardState.pieces.push(baddie3);
 
   // initialize characters on map
   this.characterSprites = this.game.add.group();
@@ -134,6 +187,7 @@ Gameplay.prototype.create = function () {
     var newCharacterOnMap = this.game.add.sprite(piece.position.x * this.tileSize, piece.position.y * this.tileSize, 'map_sprites', 32);
     newCharacterOnMap.data.index = index;
 
+    /*
     // This should probably just be math'd for the index, but at the moment we haven't made sprites for everyone yet
     if (piece.name === 'Bapi') {
       newCharacterOnMap.animations.add('idle', [32, 33, 34], 3, true);
@@ -145,7 +199,9 @@ Gameplay.prototype.create = function () {
       newCharacterOnMap.animations.add('idle', [41, 42, 43], 3, true);
     } else {
       newCharacterOnMap.animations.add('idle', [29, 30, 31], 3, true);
-    }
+    }*/
+
+    newCharacterOnMap.animations.add('idle', [29, 30, 31].map(function (val) { return val + ((PortraitMap[piece.name] ? PortraitMap[piece.name] : 0) * 3) }, this).map(function (v) {  if (v >= 66 && v <= 70) { return v + 5; } else { return v; } }), 3, true);
 
     newCharacterOnMap.animations.play('idle');
     this.characterSprites.addChild(newCharacterOnMap);
