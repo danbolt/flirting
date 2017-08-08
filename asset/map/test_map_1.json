@@ -31,8 +31,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":240,
-                 "y":32
+                 "x":160,
+                 "y":96
                 }, 
                 {
                  "height":16,
@@ -103,8 +103,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":256,
-                 "y":80
+                 "x":112,
+                 "y":96
                 }, 
                 {
                  "height":16,
@@ -121,8 +121,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":240,
-                 "y":112
+                 "x":128,
+                 "y":64
                 }, 
                 {
                  "height":16,
@@ -139,8 +139,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":304,
-                 "y":48
+                 "x":192,
+                 "y":80
                 }, 
                 {
                  "height":16,
@@ -157,8 +157,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":288,
-                 "y":32
+                 "x":176,
+                 "y":64
                 }, 
                 {
                  "height":16,
@@ -175,7 +175,7 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":192,
+                 "x":208,
                  "y":48
                 }, 
                 {
@@ -285,6 +285,24 @@
                  "width":16,
                  "x":352,
                  "y":288
+                }, 
+                {
+                 "height":16,
+                 "id":19,
+                 "name":"Yang",
+                 "properties":
+                    {
+                     "hp":"5",
+                     "romanceType":"1",
+                     "style":"-1",
+                     "team":"0"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":144,
+                 "y":16
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -293,7 +311,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":17,
+ "nextobjectid":20,
  "orientation":"orthogonal",
  "properties":
     {
