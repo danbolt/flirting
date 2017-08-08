@@ -504,6 +504,12 @@ var Convos = {
                   "line": "Geez! Get out of here!"
                 }
               ],
+              [
+                {
+                  "speaker": "<TARGET>",
+                  "line": "Eww..."
+                }
+              ],
             ],
 
       // Unmoved
@@ -518,6 +524,12 @@ var Convos = {
                 {
                   "speaker": "<TARGET>",
                   "line": "Huh?"
+                }
+              ],
+              [
+                {
+                  "speaker": "<TARGET>",
+                  "line": "I really don't understand what you're getting at."
                 }
               ],
            ],
@@ -553,6 +565,20 @@ var Convos = {
                 {
                   "speaker": "<TARGET>",
                   "line": "Are you always this hunky?", //LOLOLOLOL I NEED SLEEP WHAT DID I WRITE
+                  "targetSwoon" : true
+                }
+              ],
+              [
+                {
+                  "speaker": "<TARGET>",
+                  "line": "**GASP**",
+                  "targetSwoon" : true
+                }
+              ],
+              [
+                {
+                  "speaker": "<TARGET>",
+                  "line": "Oh... man... that hit me in all the right ways.",
                   "targetSwoon" : true
                 }
               ],
@@ -602,6 +628,20 @@ var Convos = {
                   {
                     speaker: "<TARGET>",
                     "line": "Yeah, I'll see you then!"
+                  }
+                ],
+                [
+                  {
+                   "speaker": "<TARGET>",
+                   "line": "It's... uh... really nice to meet you."
+                  },
+                  {
+                    speaker: "<FLIRTER>",
+                    "line": "Why don't we skip all this raiding and go find somewhere our own?"
+                  },
+                  {
+                    speaker: "<TARGET>",
+                    "line": "Yeah, come meet me soon!"
                   }
                 ],
                 [
@@ -700,6 +740,36 @@ var Convos = {
                       "line": "I don't understand your getup at all."
                     },
                   ],
+                  [
+                    {
+                      speaker: "<TARGET>",
+                      "line": "You seem kind of strange. Don't you get that I'm a thug?"
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<TARGET>",
+                      "line": "That really isn't the best of haircuts for you."
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<TARGET>",
+                      "line": "Listen, kid. You realy out to get out of here. We're a bunch of bandit thugs."
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<TARGET>",
+                      "line": "Get outta my way!"
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<TARGET>",
+                      "line": "What are you even doing here?"
+                    },
+                  ],
                ]
   },
   "DissResponse": {
@@ -725,12 +795,33 @@ var Convos = {
                       "flirterStagger": true
                     },
                   ],
+                  [
+                    {
+                      speaker: "<FLIRTER>",
+                      "line": "Ah geez...",
+                      "flirterStagger": true
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<FLIRTER>",
+                      "line": "Um... I... oh...",
+                      "flirterStagger": true
+                    },
+                  ],
+                  [
+                    {
+                      speaker: "<FLIRTER>",
+                      "line": "What?!?",
+                      "flirterStagger": true
+                    },
+                  ],
                ],
     "NoDamage": [
                   [
                     {
                       speaker: "<FLIRTER>",
-                      "line": "Whatever! I'm fabulous! "
+                      "line": "Whatever! I'm fabulous!"
                     },
                   ],
                   [

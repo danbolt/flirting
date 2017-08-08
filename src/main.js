@@ -439,6 +439,26 @@ Gameplay.prototype.refreshBoardView = function () {
   this.turnInfoText.text = 'TURN ' + this.boardState.turn;
 };
 
+var TitleScreen = function () {
+  //
+};
+TitleScreen.prototype.init = function () {TitleScreen
+};
+TitleScreen.prototype.preload = function () {
+  //
+};
+TitleScreen.prototype.create = function() {
+  this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);
+  this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.UP);
+  this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
+
+  var titleText = this.game.add.bitmapText(2, 2, 'newsgeek', 'Flirt Tactics\n\nSadly, this is just a little prototype.\nI hope to finish it with more content\nsoon!\n\nInstructions are below.\nYou can press ENTER to play!', 16);
+
+  this.game.input.keyboard.addKey(Phaser.KeyCode.ENTER).onUp.add(function() {
+    this.game.state.start('Gameplay');
+  }, this);
+};
+
 var Preload = function () {
   //
 };
@@ -473,13 +493,14 @@ Preload.prototype.create = function() {
   this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.UP);
   this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
 
-  this.game.state.start('Gameplay');
+  this.game.state.start('TitleScreen');
 };
 
 var main = function () {
   var game = new Phaser.Game(320, 180, Phaser.AUTO, undefined, undefined, false, false);
 
   game.state.add('Preload', Preload, false);
+  game.state.add('TitleScreen', TitleScreen, false);
   game.state.add('Gameplay', Gameplay, false);
   game.state.start('Preload');
 };
